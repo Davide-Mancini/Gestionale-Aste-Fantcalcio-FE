@@ -22,7 +22,7 @@ function MyNavbar() {
   });
 
   const signInState = useSelector((state) => {
-    return state.signIn.signIn;
+    return state.signIn.isAuthenticated;
   });
   useEffect(() => {
     if (signInState) {
@@ -42,7 +42,7 @@ function MyNavbar() {
       className="bg-body-tertiary fw-medium "
       fixed="top"
     >
-      <Container fluid className=" m-0 ">
+      <Container fluid className=" m-0">
         <Link to={"/"} className=" navbar-brand ms-4">
           {" "}
           Algo Tool Asta
@@ -103,9 +103,10 @@ function MyNavbar() {
                     drop="start"
                     showCaret={false}
                   >
-                    <NavDropdown.Item href="#action/3.1">
+                    <Link className=" dropdown-item" to={"/profile"}>
                       Profilo
-                    </NavDropdown.Item>
+                    </Link>
+
                     <NavDropdown.Item href="#action/3.1">
                       Termini e Condizioni
                     </NavDropdown.Item>

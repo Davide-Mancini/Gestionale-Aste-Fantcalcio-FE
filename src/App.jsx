@@ -11,6 +11,7 @@ import Strategia from "./component/Strategia";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./redux/actions/checkAuth";
+import { Profile } from "./component/profile";
 
 function App() {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ function App() {
             ></Route>
             <Route path="/asta" element={<Asta />} />
             <Route path="/strategia" element={<Strategia />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </Container>
       </BrowserRouter>

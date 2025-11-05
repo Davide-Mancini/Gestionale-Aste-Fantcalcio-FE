@@ -17,7 +17,7 @@ const SignInButton = () => {
   const handleSignIn = () => {
     dispatch(signIn(email, password));
   };
-  const signInState = useSelector((state) => state.signIn.signIn);
+  const signInState = useSelector((state) => state.signIn.isAuthenticated);
 
   useEffect(() => {
     if (signInState) {

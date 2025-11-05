@@ -16,6 +16,7 @@ export const checkAuth = () => {
         }
       })
       .then((data) => {
+        console.log(data);
         dispatch({
           type: SIGN_IN,
           payload: data,
