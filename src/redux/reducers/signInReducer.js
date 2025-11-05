@@ -1,3 +1,4 @@
+import { SIGN_OUT } from "../actions/logoutAction";
 import { SIGN_IN } from "../actions/signInAction";
 
 const initialState = {
@@ -11,6 +12,11 @@ const signInReducer = (state = initialState, action) => {
         ...state,
         signIn: true,
         user: action.payload,
+      };
+    case SIGN_OUT:
+      return {
+        signIn: false,
+        user: {},
       };
     default:
       return state;

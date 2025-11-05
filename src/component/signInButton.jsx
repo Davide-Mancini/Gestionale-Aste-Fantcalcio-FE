@@ -23,11 +23,9 @@ const SignInButton = () => {
     if (signInState) {
       setShow(false);
     }
-    
   }, [signInState]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  console.log(signInState);
   return (
     <>
       <Button

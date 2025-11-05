@@ -7,17 +7,20 @@ import SignInButton from "./signInButton";
 import RegisterButton from "./registerButton";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PersonCircle } from "react-bootstrap-icons";
 import { Alert, Toast, ToastContainer } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { Logout } from "../redux/actions/logoutAction";
 
 function MyNavbar() {
+  const dispatch = useDispatch();
   const [visible, setVisible] = useState(false);
 
   const user = useSelector((state) => {
     return state.signIn.user;
   });
+
   const signInState = useSelector((state) => {
     return state.signIn.signIn;
   });
@@ -28,6 +31,8 @@ function MyNavbar() {
         return setVisible(false);
       }, 2000);
       return () => clearTimeout(timer);
+    } else {
+      setVisible(false);
     }
   }, [signInState]);
   return (
@@ -91,7 +96,8 @@ function MyNavbar() {
                     className=" text-center me-3 "
                     title={
                       <h6>
-                        Ciao, <span className=" fw-bold"> {user?.nome}</span>
+                        Ciao,{" "}
+                        <span className=" fw-bold"> {user?.nome || "..."}</span>
                       </h6>
                     }
                     drop="start"
@@ -105,8 +111,10 @@ function MyNavbar() {
                     </NavDropdown.Item>
                     <NavDropdown.Divider />
                     <NavDropdown.Item
-                      href="#action/3.2"
                       className="logout text-center "
+                      onClick={() => {
+                        dispatch(Logout());
+                      }}
                     >
                       Logout
                     </NavDropdown.Item>

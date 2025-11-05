@@ -1,7 +1,7 @@
 export const SIGN_IN = "SIGN_IN_SUCCESS";
 export const signIn = (email, password) => {
   return async (dispatch) => {
-    fetch("http://localhost:3001/auth/login", {
+    await fetch("http://localhost:3001/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
