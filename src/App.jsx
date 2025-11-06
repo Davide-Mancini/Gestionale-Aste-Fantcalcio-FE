@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./redux/actions/checkAuth";
 import { Profile } from "./component/profile";
+import { ListaGiocatori } from "./component/listaGiocatori";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function App() {
       <BrowserRouter>
         <Container fluid>
           <Routes>
+            <Route path="/listacalciatori" element={<ListaGiocatori />} />
             <Route path="/" element={<HomePage />} />
             <Route
               path="/impostazioni-asta"

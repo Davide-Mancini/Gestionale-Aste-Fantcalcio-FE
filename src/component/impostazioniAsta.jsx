@@ -2,12 +2,21 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import MyNavbar from "./myNavbar";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { creaAstaAction } from "../redux/actions/creaAstaAction";
 
 const ImpostazioniAsta = () => {
+  const dispatch = useDispatch();
   const [nAllenatori, setNAllenatori] = useState(0);
   const [nCrediti, setNCrediti] = useState(0);
+  const [nome, setNome] = useState("");
   console.log(nAllenatori);
   console.log(nCrediti);
+  console.log(nome);
+
+  // useEffect(() => {
+  //   dispatch(creaAstaAction(nome, nAllenatori, nCrediti));
+  // },[]);
 
   return (
     <>
@@ -44,12 +53,21 @@ const ImpostazioniAsta = () => {
             </Form.Select>
           </Col>
           <Col xs={12} md={4}>
-            <h2 className=" text-center">Giocatori per Ruolo</h2>
+            <h2>Nome Asta</h2>
+            <Form.Control
+              type="text"
+              onChange={(e) => {
+                setNome(e.target.value);
+              }}
+            ></Form.Control>
           </Col>
           <Link to={"/asta"}>
             <Button
               variant="outline-success"
-              className=" border-3 mt-5 w-100" /*onClick={()=>{chiamata post su tabella aste con stato di crediti e allenatori}}*/
+              className=" border-3 mt-5 w-100"
+              onClick={() => {
+                dispatch(creaAstaAction(nome, nAllenatori, nCrediti));
+              }} /*onClick={()=>{chiamata post su tabella aste con stato di crediti e allenatori}}*/
             >
               Crea Asta
             </Button>

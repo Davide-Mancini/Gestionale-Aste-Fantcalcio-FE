@@ -58,9 +58,9 @@ function MyNavbar() {
             </Link>
             <Nav.Link href="#pricing">Campetto</Nav.Link>
             <NavDropdown title="Lista Giocatori" id="collapsible-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">
+              <Link to={"/listacalciatori"} className=" dropdown-item">
                 Lista Completa
-              </NavDropdown.Item>
+              </Link>
               <NavDropdown.Divider />
               <NavDropdown.Item href="#action/3.2">Portieri</NavDropdown.Item>
               <NavDropdown.Divider />
