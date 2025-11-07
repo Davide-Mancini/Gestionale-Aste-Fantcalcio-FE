@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import { ArrowBarDown, ArrowBarUp } from "react-bootstrap-icons";
 
-const PlayerColumn = ({ nomeUtente }) => {
+const PlayerColumn = ({ nomeUtente, crediti }) => {
   // Stato iniziale per i ruoli
   const [countP, setCountP] = useState(3);
   const [countD, setCountD] = useState(8);
@@ -45,7 +45,7 @@ const PlayerColumn = ({ nomeUtente }) => {
           <Row className=" text-center">
             <p>{nomeUtente}</p>
           </Row>
-          <Row className=" justify-content-center fs-3 ">500 FM</Row>
+          <Row className=" justify-content-center fs-3 ">{crediti} FM</Row>
         </div>
         {/* Questa parte sotto va ripetuta per quanti sono i ruoli 3P, 8D, 8C, 6A */}
         {roles.map(({ ruolo, count, colorClass }) =>

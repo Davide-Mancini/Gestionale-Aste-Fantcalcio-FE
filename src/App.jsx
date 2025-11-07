@@ -30,7 +30,7 @@ function App() {
               path="/impostazioni-asta"
               element={<ImpostazioniAsta />}
             ></Route>
-            <Route path="/asta" element={<Asta />} />
+            <Route path="/sessioniAsta/:id" element={<Asta />} />
             <Route path="/strategia" element={<Strategia />} />
             <Route path="/profile" element={<Profile />} />
           </Routes>

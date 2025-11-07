@@ -1,5 +1,5 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MyNavbar from "./myNavbar";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -13,6 +13,7 @@ const ImpostazioniAsta = () => {
   console.log(nAllenatori);
   console.log(nCrediti);
   console.log(nome);
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   dispatch(creaAstaAction(nome, nAllenatori, nCrediti));
@@ -61,17 +62,16 @@ const ImpostazioniAsta = () => {
               }}
             ></Form.Control>
           </Col>
-          <Link to={"/asta"}>
-            <Button
-              variant="outline-success"
-              className=" border-3 mt-5 w-100"
-              onClick={() => {
-                dispatch(creaAstaAction(nome, nAllenatori, nCrediti));
-              }} /*onClick={()=>{chiamata post su tabella aste con stato di crediti e allenatori}}*/
-            >
-              Crea Asta
-            </Button>
-          </Link>
+
+          <Button
+            variant="outline-success"
+            className=" border-3 mt-5 w-100"
+            onClick={() => {
+              dispatch(creaAstaAction(nome, nAllenatori, nCrediti, navigate));
+            }} /*onClick={()=>{chiamata post su tabella aste con stato di crediti e allenatori}}*/
+          >
+            Crea Asta
+          </Button>
         </Row>
       </Container>
     </>

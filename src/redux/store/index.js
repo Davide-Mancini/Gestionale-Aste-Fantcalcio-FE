@@ -5,6 +5,7 @@ import { registerReducer } from "../reducers/registerReducer";
 import { uploadImgReducer } from "../reducers/uploadImgReducer";
 import { getCalciatoriReducer } from "../reducers/getCalciatoriReducer";
 import { creaAstaReducer } from "../reducers/creaAstaReducer";
+import { getAstaByIdReducer } from "../reducers/getAstaByIdReducer";
 
 const combineReducer = combineReducers({
   news: newsReducer,
@@ -13,6 +14,7 @@ const combineReducer = combineReducers({
   uploader: uploadImgReducer,
   calciatori: getCalciatoriReducer,
   asta: creaAstaReducer,
+  astaById: getAstaByIdReducer,
 });
 
 const store = configureStore({

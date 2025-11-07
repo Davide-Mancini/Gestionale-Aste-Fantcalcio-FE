@@ -1,6 +1,6 @@
 export const CREA_ASTA = "CREA_ASTA";
 
-export const creaAstaAction = (nome, partecipanti, crediti) => {
+export const creaAstaAction = (nome, partecipanti, crediti, navigate) => {
   return async (dispatch) => {
     await fetch("http://localhost:3001/sessioniAsta", {
       method: "POST",
@@ -23,6 +23,8 @@ export const creaAstaAction = (nome, partecipanti, crediti) => {
           type: CREA_ASTA,
           payload: data,
         });
+        console.log(data.id);
+        navigate(`/sessioniAsta/${data.id}`);
       })
       .catch((err) => {
         console.log(err);

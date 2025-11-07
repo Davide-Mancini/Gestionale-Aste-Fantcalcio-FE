@@ -23,7 +23,7 @@ export const Profile = () => {
     }
   };
   const imageSrc = urlUploaded || user?.avatar;
-
+  const listaAste = user.sessioni;
   return (
     <>
       <Container fluid className=" mt-5">
@@ -34,9 +34,6 @@ export const Profile = () => {
             <h3>Sidebar</h3>
           </Col>
           <Col md={6}>
-            <h3>foto</h3>
-          </Col>
-          <Col md={4}>
             <Card style={{ width: "18rem" }}>
               <Card.Img variant="top" src={imageSrc} />
 
@@ -55,6 +52,15 @@ export const Profile = () => {
                 <Button variant="primary">Go somewhere</Button>
               </Card.Body>
             </Card>
+          </Col>
+          {/* INSERISCO LA LISTA DELLE ASTE DELL'UTENTE LOGGATO */}
+          <Col md={4}>
+            <h2>LE TUE ASTE</h2>
+            <ul>
+              {listaAste.map((asta, index) => (
+                <li key={index}>{asta.nome_asta}</li>
+              ))}
+            </ul>
           </Col>
         </Row>
       </Container>
