@@ -5,7 +5,14 @@ import { HourglassSplit } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCalciatoriAction } from "../redux/actions/getAllCalciatori";
 
-const Searchbar = () => {
+const Searchbar = ({
+  offertaAttuale,
+  offerta1,
+  offerta5,
+  offerta10,
+  sendOfferta,
+}) => {
+  console.log(offertaAttuale);
   const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
   console.log(calciatoreSelezionato);
   //DEFINISCO IL FILTRO DA PASSARE AL MOMENTO DEL DISPATCH DEL'ACTION
@@ -109,6 +116,8 @@ const Searchbar = () => {
             </Row>
             <Row className=" mt-2 text-center">
               <h1>{calciatoreSelezionato.nome_completo}</h1>
+              <div>Offerta Attuale: {offertaAttuale}</div>
+              <Button onClick={sendOfferta}>INVIA OFFERTA</Button>
               <Button
                 onClick={() => {
                   setTimer(10);
@@ -120,9 +129,24 @@ const Searchbar = () => {
               </Button>
             </Row>
             <Row className=" d-flex justify-content-evenly mt-3 ">
-              <Button className=" border-0 w-25 fs-5 bg-info">+1</Button>
-              <Button className=" border-0 w-25 fs-5 bg-success">+5</Button>
-              <Button className=" border-0 w-25 fs-5 bg-warning">+10</Button>
+              <Button
+                className=" border-0 w-25 fs-5 bg-info"
+                onClick={offerta1}
+              >
+                +1
+              </Button>
+              <Button
+                className=" border-0 w-25 fs-5 bg-success"
+                onClick={offerta5}
+              >
+                +5
+              </Button>
+              <Button
+                className=" border-0 w-25 fs-5 bg-warning"
+                onClick={offerta10}
+              >
+                +10
+              </Button>
             </Row>
           </Col>
           <Col xs={12} md={4}>

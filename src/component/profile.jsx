@@ -6,6 +6,7 @@ import MyNavbar from "./myNavbar";
 import { Pencil } from "react-bootstrap-icons";
 import "../style/profile.css";
 import { uploadImg } from "../redux/actions/uploadImgActions";
+import { Link } from "react-router-dom";
 export const Profile = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -23,7 +24,7 @@ export const Profile = () => {
     }
   };
   const imageSrc = urlUploaded || user?.avatar;
-  const listaAste = user.sessioni;
+  const listaAste = user?.sessioni;
   return (
     <>
       <Container fluid className=" mt-5">
@@ -57,8 +58,10 @@ export const Profile = () => {
           <Col md={4}>
             <h2>LE TUE ASTE</h2>
             <ul>
-              {listaAste.map((asta, index) => (
-                <li key={index}>{asta.nome_asta}</li>
+              {listaAste?.map((asta, index) => (
+                <a href={`http://localhost:5173/sessioniAsta/${asta.id}`}>
+                  <li key={index}>{asta.nome_asta}</li>
+                </a>
               ))}
             </ul>
           </Col>
