@@ -10,13 +10,28 @@ import { GetAstaByIdAction } from "../redux/actions/getAstaByIdActions";
 import SockJS from "sockjs-client";
 import Stomp, { over } from "stompjs";
 import { addUserToAstaAction } from "../redux/actions/addUserToAstaAction";
+import { getAstaCalciatoreById } from "../redux/actions/getAstaCalciatoreByid";
 
 const Asta = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
-  console.log("rotta id" + id);
-  console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
+
+  //DEVO RECUPERARE L'ASTA GIOCATORE TRAMITE ID NON SESSIONE ASTA
+  const astaCalciatoreRecuperata = useSelector((state) => state.astaCalciatore);
+  useEffect(() => {
+    if (astaCalciatoreRecuperata) {
+      console.log("Valore aggiornato:", astaCalciatoreRecuperata);
+      // qui puoi fare quello che ti serve
+    }
+  }, [astaCalciatoreRecuperata]);
+
+  // useEffect(() => {
+  //   dispatch(getAstaCalciatoreById(astaCalciatoreRecuperata.id));
+  // }, [astaCalciatoreRecuperata]);
+  console.log("asta calciatore recuperata= ", astaCalciatoreRecuperata);
+  // console.log("rotta id" + id);
+  // console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
   useEffect(() => {
     if (id) {
       console.log("id del dispatch" + id);
@@ -25,12 +40,13 @@ const Asta = () => {
   }, [id, dispatch]);
   console.log("dopo dipsatch" + JSON.stringify(dettagliAstaRecuperata));
 
-  const [offerte, setOfferte] = useState([]);
+  // const [offerte, setOfferte] = useState([]);
   const [offerta, setOfferta] = useState(0);
   const [username, setUsername] = useState("");
   const user = useSelector((state) => {
     return state.signIn.user;
   });
+  console.log(`/topic/public/${dettagliAstaRecuperata?.id}`);
   console.log(user);
   useEffect(() => {
     if (user?.username) setUsername(user.username);
@@ -39,26 +55,38 @@ const Asta = () => {
   const [offertaAttuale, setOffertaAttuale] = useState(1);
   console.log(username);
   console.log(offerta);
-  console.log(offerte);
+  // console.log(offerte);
   useEffect(() => {
-    window.global = window;
+    if (!dettagliAstaRecuperata?.id || !user?.id) return;
+
     const socket = new SockJS("http://localhost:3001/ws");
     const client = over(socket);
+
+    // Attiva debug STOMP
+    client.debug = (str) => console.log("STOMP: " + str);
+
     client.connect({}, (frame) => {
-      console.log(frame);
-      client.subscribe(
-        `/topic/public/${dettagliAstaRecuperata?.id}`,
-        (offerta) => {
-          const offertaRicevita = JSON.parse(offerta.body);
-          setOffertaAttuale(offertaRicevita.valoreOfferta);
-        }
-      );
+      console.log("WebSocket connesso:", frame);
+
+      const astaId = dettagliAstaRecuperata.id;
+
+      client.subscribe(`/topic/public/${astaId}`, (message) => {
+        console.log("primo messaggio", message);
+        const offertaRicevuta = JSON.parse(message.body);
+        console.log("OFFERTA RICEVUTA:", offertaRicevuta);
+        setOffertaAttuale(offertaRicevuta.valoreOfferta);
+      });
     });
+
     setStompClient(client);
+
     return () => {
-      if (client && client.connect) client.disconnect();
+      if (client && client.connected) {
+        client.disconnect();
+        console.log("WebSocket disconnesso");
+      }
     };
-  }, []);
+  }, [dettagliAstaRecuperata?.id, user?.id]);
 
   const handleOfferta1 = () => {
     setOfferta(offertaAttuale + 1);
@@ -75,13 +103,20 @@ const Asta = () => {
       console.log("Stomp non connesso");
       return;
     }
+    const astaCalciatoreId = astaCalciatoreRecuperata?.asta.id;
+    console.log("ECCO ID ASTA", astaCalciatoreId);
     if (offerta && username) {
       const offertaAsta = {
         valoreOfferta: offerta,
-        offerente: user.id,
-        asta: dettagliAstaRecuperata.id,
+        offerente: user?.id,
+        asta: astaCalciatoreId,
       };
-      stompClient.send("/app/inviaofferta", {}, JSON.stringify(offertaAsta));
+      console.log("offerta asta", offertaAsta);
+      stompClient.send(
+        `/app/inviaofferta/${dettagliAstaRecuperata.id}`,
+        {},
+        JSON.stringify(offertaAsta)
+      );
       setOffertaAttuale(offertaAsta.valoreOfferta);
       console.log(offertaAsta.valoreOfferta);
     } else {
@@ -89,7 +124,6 @@ const Asta = () => {
     }
   };
 
-  console.log(dettagliAstaRecuperata);
   //ISCRIZIONE UTENTE A ASTA
   useEffect(() => {
     if (user?.id && dettagliAstaRecuperata?.id) {
@@ -108,6 +142,7 @@ const Asta = () => {
           offerta5={handleOfferta5}
           offerta10={handleOfferta10}
           sendOfferta={sendOfferta}
+          getAstaId={getAstaCalciatoreById}
         />
         <Griglia />
       </Container>

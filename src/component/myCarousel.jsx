@@ -18,12 +18,16 @@ function Mycarousel() {
     return state.news.news;
   });
   return (
-    <Container
-      fluid
-      className=" border rounded-5 shadow text-light my-5 gradienteDiSfondo "
-    >
+    <Container className=" border rounded-5 shadow text-light my-5 gradienteDiSfondo ">
       <Row>
-        <Col xs={2}></Col>
+        <Col xs={2}>
+          <iframe
+            id="sofa-standings-embed-33-76457"
+            src="https://widgets.sofascore.com/it/embed/tournament/33/season/76457/standings/Serie%20A%2025%2F26?widgetTitle=Serie%20A%2025%2F26&showCompetitionLogo=true"
+            style={{ height: "1123px", maxWidth: "768px", width: "100%" }}
+            className=" overflow-x-auto"
+          ></iframe>
+        </Col>
         <Col xs={8}>
           <Carousel fade className=" w-100 mx-auto p-4">
             {news.map((singleNews, id) => (

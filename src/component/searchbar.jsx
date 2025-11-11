@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { HourglassSplit } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCalciatoriAction } from "../redux/actions/getAllCalciatori";
+import { astaCalciatoreAction } from "../redux/actions/astaCalciatoreAction";
+import { useParams } from "react-router-dom";
+import { GetAstaByIdAction } from "../redux/actions/getAstaByIdActions";
 
 const Searchbar = ({
   offertaAttuale,
@@ -12,6 +15,7 @@ const Searchbar = ({
   offerta10,
   sendOfferta,
 }) => {
+  const dispatch = useDispatch();
   console.log(offertaAttuale);
   const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
   console.log(calciatoreSelezionato);
@@ -23,9 +27,18 @@ const Searchbar = ({
     valore: "",
   });
 
+  const { id } = useParams();
+  const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
+  // console.log("rotta id" + id);
+  // console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
+  useEffect(() => {
+    if (id) {
+      console.log("id del dispatch" + id);
+      dispatch(GetAstaByIdAction(id));
+    }
+  }, [id, dispatch]);
   const lista = useSelector((state) => state.calciatori.calciatori);
   console.log(lista);
-  const dispatch = useDispatch();
 
   //DISPATCHO L'ACTION PASSANDOGLI I FILTRI
   //PER EVITARE CHIAMARE INUTILI: SE NON C'è NULLA NELL'INPUT NON FARE DISPATCH+ATTESA CHE L'UTENTE SMETTA DIS CRIVERE
@@ -122,6 +135,12 @@ const Searchbar = ({
                 onClick={() => {
                   setTimer(10);
                   setIsRunning(true);
+                  dispatch(
+                    astaCalciatoreAction(
+                      calciatoreSelezionato.id,
+                      dettagliAstaRecuperata.id
+                    )
+                  );
                 }}
               >
                 {" "}
