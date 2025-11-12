@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { HourglassSplit } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCalciatoriAction } from "../redux/actions/getAllCalciatori";
-import { astaCalciatoreAction } from "../redux/actions/astaCalciatoreAction";
 import { useParams } from "react-router-dom";
 import { GetAstaByIdAction } from "../redux/actions/getAstaByIdActions";
 
@@ -14,11 +13,12 @@ const Searchbar = ({
   offerta5,
   offerta10,
   sendOfferta,
+  calciatoreSelezionato,
+  handleSelezionaCalciatore,
+  handleIniziaAsta,
 }) => {
   const dispatch = useDispatch();
-  console.log(offertaAttuale);
-  const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
-  console.log(calciatoreSelezionato);
+  // const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
   //DEFINISCO IL FILTRO DA PASSARE AL MOMENTO DEL DISPATCH DEL'ACTION
   const [filters, setFilters] = useState({
     ruolo: "",
@@ -28,7 +28,7 @@ const Searchbar = ({
   });
 
   const { id } = useParams();
-  const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
+  // const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
   // console.log("rotta id" + id);
   // console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
   useEffect(() => {
@@ -38,7 +38,6 @@ const Searchbar = ({
     }
   }, [id, dispatch]);
   const lista = useSelector((state) => state.calciatori.calciatori);
-  console.log(lista);
 
   //DISPATCHO L'ACTION PASSANDOGLI I FILTRI
   //PER EVITARE CHIAMARE INUTILI: SE NON C'è NULLA NELL'INPUT NON FARE DISPATCH+ATTESA CHE L'UTENTE SMETTA DIS CRIVERE
@@ -107,7 +106,7 @@ const Searchbar = ({
                       <ListGroup.Item
                         key={calciatore.id}
                         onClick={() => {
-                          setCalciatoreSelezionato(calciatore);
+                          handleSelezionaCalciatore(calciatore);
                           setFilters({
                             ...filters,
                             cognome: calciatore.cognome,
@@ -128,19 +127,20 @@ const Searchbar = ({
               </h1>
             </Row>
             <Row className=" mt-2 text-center">
-              <h1>{calciatoreSelezionato.nome_completo}</h1>
+              <h1>{calciatoreSelezionato.nomeCompleto}</h1>
               <div>Offerta Attuale: {offertaAttuale}</div>
               <Button onClick={sendOfferta}>INVIA OFFERTA</Button>
               <Button
                 onClick={() => {
+                  handleIniziaAsta();
                   setTimer(10);
                   setIsRunning(true);
-                  dispatch(
-                    astaCalciatoreAction(
-                      calciatoreSelezionato.id,
-                      dettagliAstaRecuperata.id
-                    )
-                  );
+                  // dispatch(
+                  //   astaCalciatoreAction(
+                  //     calciatoreSelezionato.id,
+                  //     dettagliAstaRecuperata.id
+                  //   )
+                  // );
                 }}
               >
                 {" "}
@@ -169,7 +169,7 @@ const Searchbar = ({
             </Row>
           </Col>
           <Col xs={12} md={4}>
-            <img src={calciatoreSelezionato.campioncino} alt="" />
+            <img src={calciatoreSelezionato.immagineUrl} alt="" />
           </Col>
         </Row>
       </Container>

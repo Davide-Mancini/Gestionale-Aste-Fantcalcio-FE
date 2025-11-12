@@ -50,6 +50,8 @@ const Asta = () => {
   //Inizio ad impostare il mio WebSocket definendo stato locale per stompClient
   const [stompClient, setStompClient] = useState(null);
   const [offertaAttuale, setOffertaAttuale] = useState(1);
+  const [astaCalciatore, setAstaCalciatore] = useState(null);
+  console.log("ASTAAAAA", astaCalciatore);
   //Qui inizia la sottoscrizione del client al WebSocket
   useEffect(() => {
     //Se dettagliAstaRecuperata?.id o user?.id non sono presenti fermo subito l'esecuzione
@@ -70,6 +72,19 @@ const Asta = () => {
         console.log("OFFERTA RICEVUTA:", offertaRicevuta);
         setOffertaAttuale(offertaRicevuta.valoreOfferta);
       });
+      client.subscribe(`/topic/calciatore-selezionato/${astaId}`, (message) => {
+        const calciatore = JSON.parse(message.body);
+        console.log("Calciatore selezionato da altri:", calciatore);
+        setCalciatoreSelezionato(calciatore);
+      });
+      client.subscribe(
+        `/topic/asta-iniziata/${dettagliAstaRecuperata.id}`,
+        (message) => {
+          const nuovaAsta = JSON.parse(message.body);
+          console.log("Asta iniziata per tutti:", nuovaAsta);
+          setAstaCalciatore(nuovaAsta);
+        }
+      );
       // client.subscribe(
       //   `/topic/utente-entrato/${astaId}/${user.id}`,
       //   (message) => {
@@ -108,12 +123,12 @@ const Asta = () => {
     //Definisco una costante per salvare il valore di astaCalciatoreRecuperata?.asta.id
     const astaCalciatoreId = astaCalciatoreRecuperata?.asta.id;
     console.log("ECCO ID ASTA", astaCalciatoreId);
-    //Se sia l'offerta che l'username sono settati allora posso creare l'offerta dell'asta, composta dall'offerta, l'id dell'utente che fa l'offerta e l'id dell'asta calciatore
-    if (offerta && username && astaCalciatoreId) {
+    //Se sia l'offerta che l'username che l'id dell'asta calciatore sono settati allora posso creare l'offerta dell'asta, composta dall'offerta, l'id dell'utente che fa l'offerta e l'id dell'asta calciatore
+    if (offerta && username && astaCalciatore) {
       const offertaAsta = {
         valoreOfferta: offerta,
         offerente: user?.id,
-        asta: astaCalciatoreId,
+        asta: astaCalciatore.id,
       };
       //Invio dell'offerta al Back-End
       stompClient.send(
@@ -134,6 +149,39 @@ const Asta = () => {
       dispatch(addUserToAstaAction(dettagliAstaRecuperata.id, user.id));
     }
   }, [user?.id, dettagliAstaRecuperata?.id, dispatch]);
+
+  const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
+  const handleSelezionaCalciatore = (calciatore) => {
+    if (!stompClient?.connected) return;
+
+    const payload = {
+      id: calciatore.id,
+      nomeCompleto: calciatore.nome_completo,
+      immagineUrl: calciatore.campioncino,
+      valoreBase: 1,
+    };
+    stompClient.send(
+      `/app/selezionaCalciatore/${dettagliAstaRecuperata.id}`,
+      {},
+      JSON.stringify(payload)
+    );
+    setCalciatoreSelezionato(payload);
+  };
+
+  const handleIniziaAsta = () => {
+    if (!stompClient?.connected || !calciatoreSelezionato) return;
+
+    const payload = {
+      calciatoreId: calciatoreSelezionato.id,
+      astaId: dettagliAstaRecuperata.id,
+    };
+
+    stompClient.send(
+      `/app/iniziaAsta/${dettagliAstaRecuperata.id}`,
+      {},
+      JSON.stringify(payload)
+    );
+  };
   return (
     <>
       <MyNavbar />
@@ -147,6 +195,9 @@ const Asta = () => {
           offerta10={handleOfferta10}
           sendOfferta={sendOfferta}
           getAstaId={getAstaCalciatoreById}
+          calciatoreSelezionato={calciatoreSelezionato}
+          handleSelezionaCalciatore={handleSelezionaCalciatore}
+          handleIniziaAsta={handleIniziaAsta}
         />
         <Griglia />
       </Container>
