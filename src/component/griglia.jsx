@@ -5,12 +5,18 @@ import { useSelector } from "react-redux";
 
 const Griglia = () => {
   const dettagliAsta = useSelector((state) => state.astaById.asta);
-  console.log("Griglia monntata " + dettagliAsta);
+  console.log("Griglia monntata ", dettagliAsta);
   // Definisco gli utenti (giocatori) recuperandoli dallo stato della chiamata
   const utentiGiocatori = (dettagliAsta?.utenti || []).map((utente) => ({
     name: utente.username,
     crediti: dettagliAsta?.crediti,
   }));
+  if (!dettagliAsta) {
+    return <p>Caricamento griglia...</p>;
+  }
+  if (!dettagliAsta.utenti?.length) {
+    return <p>In attesa che gli utenti entrino...</p>;
+  }
 
   return (
     <>

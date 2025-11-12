@@ -13,73 +13,73 @@ import { addUserToAstaAction } from "../redux/actions/addUserToAstaAction";
 import { getAstaCalciatoreById } from "../redux/actions/getAstaCalciatoreByid";
 
 const Asta = () => {
+  // dichiaro dispatch per poter usare lo useDispatch
   const dispatch = useDispatch();
+  //Recupero l'id dall'url
   const { id } = useParams();
-  const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
-
-  //DEVO RECUPERARE L'ASTA GIOCATORE TRAMITE ID NON SESSIONE ASTA
-  const astaCalciatoreRecuperata = useSelector((state) => state.astaCalciatore);
-  useEffect(() => {
-    if (astaCalciatoreRecuperata) {
-      console.log("Valore aggiornato:", astaCalciatoreRecuperata);
-      // qui puoi fare quello che ti serve
-    }
-  }, [astaCalciatoreRecuperata]);
-
-  // useEffect(() => {
-  //   dispatch(getAstaCalciatoreById(astaCalciatoreRecuperata.id));
-  // }, [astaCalciatoreRecuperata]);
-  console.log("asta calciatore recuperata= ", astaCalciatoreRecuperata);
-  // console.log("rotta id" + id);
-  // console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
+  //Se ID è presente faccio il dispatch dell'action che recupera l'asta con l'id passandogli l'id sopra
   useEffect(() => {
     if (id) {
       console.log("id del dispatch" + id);
       dispatch(GetAstaByIdAction(id));
     }
   }, [id, dispatch]);
-  console.log("dopo dipsatch" + JSON.stringify(dettagliAstaRecuperata));
-
-  // const [offerte, setOfferte] = useState([]);
+  //Recupero i dettagli dell'asta dallo store di redux
+  const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
+  useEffect(() => {
+    console.log("dettagliAstaRecuperata cambiato:", dettagliAstaRecuperata);
+  }, [dettagliAstaRecuperata]);
+  //Recupero asta calciatore sempre dallo stato di redux, all'inizio sarà undefined, solo dopo il click sul bottone "inizia asta" sara presente
+  const astaCalciatoreRecuperata = useSelector((state) => state.astaCalciatore);
+  useEffect(() => {
+    if (astaCalciatoreRecuperata) {
+      console.log("Valore aggiornato:", astaCalciatoreRecuperata);
+    }
+  }, [astaCalciatoreRecuperata]);
+  //Setto stato locale per offerta e username
   const [offerta, setOfferta] = useState(0);
   const [username, setUsername] = useState("");
+  //Recupero l'utente dallo stato di redux
   const user = useSelector((state) => {
     return state.signIn.user;
   });
-  console.log(`/topic/public/${dettagliAstaRecuperata?.id}`);
-  console.log(user);
+  //Verifico che user è presente, se presente setto il mio stato locale di username con il suo username dal DB
   useEffect(() => {
     if (user?.username) setUsername(user.username);
   }, [user]);
+  //Inizio ad impostare il mio WebSocket definendo stato locale per stompClient
   const [stompClient, setStompClient] = useState(null);
   const [offertaAttuale, setOffertaAttuale] = useState(1);
-  console.log(username);
-  console.log(offerta);
-  // console.log(offerte);
+  //Qui inizia la sottoscrizione del client al WebSocket
   useEffect(() => {
+    //Se dettagliAstaRecuperata?.id o user?.id non sono presenti fermo subito l'esecuzione
     if (!dettagliAstaRecuperata?.id || !user?.id) return;
-
+    //Passato il controllo definisco un nuovo SockJS indicando l'endpoint definito nella configurazione del WS nel Back-End
     const socket = new SockJS("http://localhost:3001/ws");
     const client = over(socket);
-
-    // Attiva debug STOMP
     client.debug = (str) => console.log("STOMP: " + str);
-
+    //Effettua la connessione
     client.connect({}, (frame) => {
       console.log("WebSocket connesso:", frame);
-
+      //Salvo l'id dell'asta in una nuova costante
       const astaId = dettagliAstaRecuperata.id;
-
+      //Passo la costante nell'endpoint per l'iscrizione al ws
       client.subscribe(`/topic/public/${astaId}`, (message) => {
         console.log("primo messaggio", message);
         const offertaRicevuta = JSON.parse(message.body);
         console.log("OFFERTA RICEVUTA:", offertaRicevuta);
         setOffertaAttuale(offertaRicevuta.valoreOfferta);
       });
+      // client.subscribe(
+      //   `/topic/utente-entrato/${astaId}/${user.id}`,
+      //   (message) => {
+      //     const utenteEntrato = JSON.parse(message.body);
+      //     console.log("Utente entrato:", utenteEntrato);
+      //     dispatch(GetAstaByIdAction(astaId));
+      //   }
+      // );
     });
-
     setStompClient(client);
-
     return () => {
       if (client && client.connected) {
         client.disconnect();
@@ -88,6 +88,7 @@ const Asta = () => {
     };
   }, [dettagliAstaRecuperata?.id, user?.id]);
 
+  //Funzioni per gestire le offerte
   const handleOfferta1 = () => {
     setOfferta(offertaAttuale + 1);
   };
@@ -97,45 +98,48 @@ const Asta = () => {
   const handleOfferta10 = () => {
     setOfferta(offertaAttuale + 10);
   };
-
+  //Invio dell'offerta tramite stomp
   const sendOfferta = () => {
+    //Verifica prima di proseguire
     if (!stompClient || !stompClient.connected) {
       console.log("Stomp non connesso");
       return;
     }
+    //Definisco una costante per salvare il valore di astaCalciatoreRecuperata?.asta.id
     const astaCalciatoreId = astaCalciatoreRecuperata?.asta.id;
     console.log("ECCO ID ASTA", astaCalciatoreId);
-    if (offerta && username) {
+    //Se sia l'offerta che l'username sono settati allora posso creare l'offerta dell'asta, composta dall'offerta, l'id dell'utente che fa l'offerta e l'id dell'asta calciatore
+    if (offerta && username && astaCalciatoreId) {
       const offertaAsta = {
         valoreOfferta: offerta,
         offerente: user?.id,
         asta: astaCalciatoreId,
       };
-      console.log("offerta asta", offertaAsta);
+      //Invio dell'offerta al Back-End
       stompClient.send(
         `/app/inviaofferta/${dettagliAstaRecuperata.id}`,
         {},
         JSON.stringify(offertaAsta)
       );
+      //Setto l'offerta attuale con il valore dell'offerta appena fatta
       setOffertaAttuale(offertaAsta.valoreOfferta);
-      console.log(offertaAsta.valoreOfferta);
     } else {
-      console.log("inserire nickname e offerta");
+      console.log("Inserire nickname e offerta");
     }
   };
-
-  //ISCRIZIONE UTENTE A ASTA
+  //Qui viene aggiunto l'utente alla lista degli utenti di quella specifica asta
   useEffect(() => {
     if (user?.id && dettagliAstaRecuperata?.id) {
       //DISPATCH DELLA CHIAMATA CHE REGISTRA UTENTE A ASTA
       dispatch(addUserToAstaAction(dettagliAstaRecuperata.id, user.id));
     }
-  }, [user, id]);
+  }, [user?.id, dettagliAstaRecuperata?.id, dispatch]);
   return (
     <>
       <MyNavbar />
       <Container fluid>
         <h2 className=" mt-5">{dettagliAstaRecuperata?.nome_asta}</h2>
+        {/* Passo le mie funzioni alla search bar tramite props */}
         <Searchbar
           offertaAttuale={offertaAttuale}
           offerta1={handleOfferta1}
