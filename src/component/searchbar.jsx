@@ -16,9 +16,9 @@ const Searchbar = ({
   calciatoreSelezionato,
   handleSelezionaCalciatore,
   handleIniziaAsta,
+  astaCalciatore,
 }) => {
   const dispatch = useDispatch();
-  // const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
   //DEFINISCO IL FILTRO DA PASSARE AL MOMENTO DEL DISPATCH DEL'ACTION
   const [filters, setFilters] = useState({
     ruolo: "",
@@ -28,9 +28,6 @@ const Searchbar = ({
   });
 
   const { id } = useParams();
-  // const dettagliAstaRecuperata = useSelector((state) => state.astaById.asta);
-  // console.log("rotta id" + id);
-  // console.log("dettagli atsa:" + JSON.stringify(dettagliAstaRecuperata));
   useEffect(() => {
     if (id) {
       console.log("id del dispatch" + id);
@@ -67,7 +64,7 @@ const Searchbar = ({
   //     valore: "",
   //   });
   // };
-  const [timer, setTimer] = useState(10);
+
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
@@ -84,6 +81,31 @@ const Searchbar = ({
     }, 1000);
     return () => clearInterval(interval);
   }, [isRunning]);
+
+  //Timer calcolato tramite data inizio dell'asta e la durata in secondi gia stabilita nel back-end
+  const [timer, setTimer] = useState(null);
+  useEffect(() => {
+    if (!astaCalciatore?.dataInizio) return;
+
+    const durata = astaCalciatore.durataSecondi || 10;
+    //GetTime ritorna la data in lmiillisecondi
+    const inizio = new Date(astaCalciatore.dataInizio).getTime();
+    //qui definisico la fine nel futuro, prendo l'inizio come .now e gli aggiungo i 10 secondi
+    const fine = inizio + durata * 1000;
+    const interval = setInterval(() => {
+      const ora = Date.now();
+      //Per stabilire i secondi rimanenti uso il .max che prende il numero massimo tra quelli a sua disposizione, in questo caso tra 0 e la differenza tra
+      //la fine (sarebbe .now+10) e .now
+      const secondiRimanenti = Math.max(0, Math.floor((fine - ora) / 1000));
+      setTimer(secondiRimanenti);
+      if (secondiRimanenti <= 0) {
+        clearInterval(interval);
+        console.log("Asta finita");
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [astaCalciatore?.dataInizio, astaCalciatore?.durataSecondi]);
+  console.log("timeeeeeeeer", timer);
   return (
     <>
       <Container fluid className=" mt-4">
@@ -123,7 +145,14 @@ const Searchbar = ({
             <Row className=" text-center">
               <h1>
                 <HourglassSplit />
-                {timer}
+                {timer !== null ? (
+                  <div> {timer}</div>
+                ) : (
+                  <div>
+                    {" "}
+                    <p>10finto</p>{" "}
+                  </div>
+                )}
               </h1>
             </Row>
             <Row className=" mt-2 text-center">

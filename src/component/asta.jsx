@@ -30,14 +30,15 @@ const Asta = () => {
     console.log("dettagliAstaRecuperata cambiato:", dettagliAstaRecuperata);
   }, [dettagliAstaRecuperata]);
   //Recupero asta calciatore sempre dallo stato di redux, all'inizio sarà undefined, solo dopo il click sul bottone "inizia asta" sara presente
-  const astaCalciatoreRecuperata = useSelector((state) => state.astaCalciatore);
-  useEffect(() => {
-    if (astaCalciatoreRecuperata) {
-      console.log("Valore aggiornato:", astaCalciatoreRecuperata);
-    }
-  }, [astaCalciatoreRecuperata]);
+  // const astaCalciatoreRecuperata = useSelector((state) => state.astaCalciatore);
+  // useEffect(() => {
+  //   if (astaCalciatoreRecuperata) {
+  //     console.log("Valore aggiornato:", astaCalciatoreRecuperata);
+  //   }
+  // }, [astaCalciatoreRecuperata]);
   //Setto stato locale per offerta e username
   const [offerta, setOfferta] = useState(0);
+  console.log("Offertaaaa", offerta);
   const [username, setUsername] = useState("");
   //Recupero l'utente dallo stato di redux
   const user = useSelector((state) => {
@@ -71,6 +72,10 @@ const Asta = () => {
         const offertaRicevuta = JSON.parse(message.body);
         console.log("OFFERTA RICEVUTA:", offertaRicevuta);
         setOffertaAttuale(offertaRicevuta.valoreOfferta);
+        setAstaCalciatore((prev) => ({
+          ...prev,
+          dataInizio: offertaRicevuta.inizioAsta,
+        }));
       });
       client.subscribe(`/topic/calciatore-selezionato/${astaId}`, (message) => {
         const calciatore = JSON.parse(message.body);
@@ -120,9 +125,8 @@ const Asta = () => {
       console.log("Stomp non connesso");
       return;
     }
-    //Definisco una costante per salvare il valore di astaCalciatoreRecuperata?.asta.id
-    const astaCalciatoreId = astaCalciatoreRecuperata?.asta.id;
-    console.log("ECCO ID ASTA", astaCalciatoreId);
+
+    console.log("ECCO ID ASTA", astaCalciatore?.id);
     //Se sia l'offerta che l'username che l'id dell'asta calciatore sono settati allora posso creare l'offerta dell'asta, composta dall'offerta, l'id dell'utente che fa l'offerta e l'id dell'asta calciatore
     if (offerta && username && astaCalciatore) {
       const offertaAsta = {
@@ -182,6 +186,7 @@ const Asta = () => {
       JSON.stringify(payload)
     );
   };
+
   return (
     <>
       <MyNavbar />
@@ -198,6 +203,7 @@ const Asta = () => {
           calciatoreSelezionato={calciatoreSelezionato}
           handleSelezionaCalciatore={handleSelezionaCalciatore}
           handleIniziaAsta={handleIniziaAsta}
+          astaCalciatore={astaCalciatore}
         />
         <Griglia />
       </Container>
