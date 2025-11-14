@@ -18,7 +18,7 @@ function Mycarousel() {
     return state.news.news;
   });
   return (
-    <Container className=" border rounded-5 shadow text-light my-5 gradienteDiSfondo ">
+    <Container className=" border rounded-5 text-light my-5 gradienteDiSfondo ">
       <Row>
         <Col xs={2}>
           <iframe

@@ -86,7 +86,7 @@ function MyNavbar() {
                   {visible && (
                     <Alert
                       variant="success"
-                      className=" position-fixed start-50 text-center z-3 translate-middle shadow mt-5"
+                      className=" position-fixed start-50 text-center z-3 translate-middle  mt-5"
                     >
                       Login effettuato
                     </Alert>

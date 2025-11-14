@@ -52,6 +52,7 @@ const Asta = () => {
   const [stompClient, setStompClient] = useState(null);
   const [offertaAttuale, setOffertaAttuale] = useState(1);
   const [astaCalciatore, setAstaCalciatore] = useState(null);
+  const [offerente, setOfferente] = useState(null);
   console.log("ASTAAAAA", astaCalciatore);
   //Qui inizia la sottoscrizione del client al WebSocket
   useEffect(() => {
@@ -72,6 +73,7 @@ const Asta = () => {
         const offertaRicevuta = JSON.parse(message.body);
         console.log("OFFERTA RICEVUTA:", offertaRicevuta);
         setOffertaAttuale(offertaRicevuta.valoreOfferta);
+        setOfferente(offertaRicevuta.offerente);
         setAstaCalciatore((prev) => ({
           ...prev,
           dataInizio: offertaRicevuta.inizioAsta,
@@ -88,6 +90,29 @@ const Asta = () => {
           const nuovaAsta = JSON.parse(message.body);
           console.log("Asta iniziata per tutti:", nuovaAsta);
           setAstaCalciatore(nuovaAsta);
+        }
+      );
+      client.subscribe(
+        `/topic/asta-terminata/${dettagliAstaRecuperata.id}`,
+        (message) => {
+          const data = JSON.parse(message.body);
+
+          console.log("ASTA TERMINATA RICEVUTA:", data);
+          if (data.sessioneAstaId === dettagliAstaRecuperata.id) {
+            alert(
+              `${data.calciatore} assegnato a ${data.vincitore} per ${data.prezzo} crediti!`
+            );
+            setAstaCalciatore(null);
+            setOffertaAttuale(1);
+            setCalciatoreSelezionato({});
+            setOfferente(null);
+          }
+
+          // Resetta tutto per la prossima asta
+          setAstaCalciatore(null);
+          setOffertaAttuale(1);
+          setCalciatoreSelezionato({});
+          setOfferente(null);
         }
       );
       // client.subscribe(
@@ -186,6 +211,18 @@ const Asta = () => {
       JSON.stringify(payload)
     );
   };
+  const handleFineAsta = () => {
+    if (!stompClient?.connected) return;
+    if (!astaCalciatore?.id) {
+      console.error("AstaCalciatore NON PRONTO");
+      return;
+    }
+    stompClient.send(
+      `/app/termina-asta/${astaCalciatore.id}`,
+      {},
+      JSON.stringify({})
+    );
+  };
 
   return (
     <>
@@ -204,6 +241,8 @@ const Asta = () => {
           handleSelezionaCalciatore={handleSelezionaCalciatore}
           handleIniziaAsta={handleIniziaAsta}
           astaCalciatore={astaCalciatore}
+          offerente={offerente}
+          handleFineAsta={handleFineAsta}
         />
         <Griglia />
       </Container>

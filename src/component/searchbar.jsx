@@ -1,4 +1,12 @@
-import { Button, Col, Container, Form, ListGroup, Row } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Col,
+  Container,
+  Form,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
 import "../style/searchbar.css";
 import { useEffect, useState } from "react";
 import { Coin, HourglassSplit } from "react-bootstrap-icons";
@@ -17,6 +25,8 @@ const Searchbar = ({
   handleSelezionaCalciatore,
   handleIniziaAsta,
   astaCalciatore,
+  offerente,
+  handleFineAsta,
 }) => {
   const dispatch = useDispatch();
   //DEFINISCO IL FILTRO DA PASSARE AL MOMENTO DEL DISPATCH DEL'ACTION
@@ -101,16 +111,36 @@ const Searchbar = ({
       if (secondiRimanenti <= 0) {
         clearInterval(interval);
         console.log("Asta finita");
+        handleFineAsta();
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [astaCalciatore?.dataInizio, astaCalciatore?.durataSecondi]);
+  }, [
+    astaCalciatore?.dataInizio,
+    astaCalciatore?.durataSecondi,
+    handleFineAsta,
+  ]);
   console.log("timeeeeeeeer", timer);
+  console.log("OFFERTAAAA ATTUALE", astaCalciatore);
+
+  const [iniziaAstaButton, setIniziaAstaButton] = useState(true);
+
   return (
     <>
       <Container fluid className=" mt-4 bg-warning rounded-5">
         <Row>
           <Col xs={12} md={8} className=" mb-5 px-5">
+            {timer == 0 && (
+              <Alert>
+                {" "}
+                <span className=" fw-bold">{offerente}</span> ha acquistato{" "}
+                <span className=" fw-bold">
+                  {" "}
+                  {astaCalciatore.nomeCalciatore}
+                </span>{" "}
+                per <span className=" fw-bold">{offertaAttuale}</span> FM
+              </Alert>
+            )}
             <Form className="d-flex margine">
               <div className=" d-flex flex-column w-100">
                 <h1>Cerca Giocatore</h1>
@@ -135,6 +165,8 @@ const Searchbar = ({
                             cognome: calciatore.cognome,
                           });
                           setCliccato(true);
+                          setTimer(10);
+                          setIniziaAstaButton(true);
                         }}
                       >
                         {calciatore?.cognome}
@@ -144,7 +176,7 @@ const Searchbar = ({
                 </ListGroup>
               </div>
             </Form>
-            {cliccato && (
+            {Object.keys(calciatoreSelezionato).length !== 0 && (
               <Row className=" text-center d-flex justify-content-center">
                 <div className=" me-2 d-flex justify-content-center align-items-center my-3 bg-dark p-2 rounded-pill w-25 border border-3 border-white">
                   <HourglassSplit className=" fs-1 text-white me-2" />
@@ -165,32 +197,36 @@ const Searchbar = ({
                 </div>
               </Row>
             )}
-            {cliccato && (
+            {Object.keys(calciatoreSelezionato).length !== 0 && (
               <Row className=" mt-2 text-center">
-                <Button
-                  className=" text-warning fs-5"
-                  variant="dark"
-                  onClick={() => {
-                    handleIniziaAsta();
-                    setTimer(10);
-                    setIsRunning(true);
-                    // dispatch(
-                    //   astaCalciatoreAction(
-                    //     calciatoreSelezionato.id,
-                    //     dettagliAstaRecuperata.id
-                    //   )
-                    // );
-                  }}
-                >
-                  {" "}
-                  INIZIA ASTA
-                </Button>
+                {!astaCalciatore && (
+                  <Button
+                    className=" text-warning fs-5"
+                    variant="dark"
+                    onClick={() => {
+                      setIniziaAstaButton(false);
+                      handleIniziaAsta();
+                      setTimer(10);
+                      setIsRunning(true);
+                      // dispatch(
+                      //   astaCalciatoreAction(
+                      //     calciatoreSelezionato.id,
+                      //     dettagliAstaRecuperata.id
+                      //   )
+                      // );
+                    }}
+                  >
+                    {" "}
+                    INIZIA ASTA
+                  </Button>
+                )}
+
                 <Button onClick={sendOfferta} className=" my-3">
                   INVIA OFFERTA
                 </Button>
               </Row>
             )}
-            {cliccato && (
+            {Object.keys(calciatoreSelezionato).length !== 0 && (
               <Row className=" d-flex justify-content-evenly mt-3 ">
                 <button className="pushable w-25" onClick={offerta1}>
                   <span className="shadow"></span>
@@ -200,12 +236,12 @@ const Searchbar = ({
                 <button className="pushable w-25" onClick={offerta5}>
                   <span className="shadow"></span>
                   <span className="edge"></span>
-                  <span className="front"> +1 </span>
+                  <span className="front"> +5 </span>
                 </button>
                 <button className="pushable w-25" onClick={offerta10}>
                   <span className="shadow"></span>
                   <span className="edge"></span>
-                  <span className="front"> +1 </span>
+                  <span className="front"> +10 </span>
                 </button>
                 {/* <Button
                 className=" border-0 w-25 fs-5 bg-info"
@@ -233,7 +269,7 @@ const Searchbar = ({
             md={4}
             className=" d-flex h-100 justify-content-center my-auto flex-column "
           >
-            <div className=" mx-auto ">
+            <div className=" mx-auto mt-2 ">
               <img
                 src={
                   calciatoreSelezionato.immagineUrl ||
