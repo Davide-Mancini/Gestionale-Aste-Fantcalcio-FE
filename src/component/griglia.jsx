@@ -45,6 +45,7 @@ const Griglia = () => {
               crediti={singoloUtente.crediti}
               ultimoAcquisto={ultimoAcquisto}
               utenteId={singoloUtente.id}
+              dettagliAsta={dettagliAsta}
             />
           ))}
         </Row>

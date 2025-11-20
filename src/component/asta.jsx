@@ -166,11 +166,25 @@ const Asta = () => {
   };
   //Qui viene aggiunto l'utente alla lista degli utenti di quella specifica asta
   useEffect(() => {
-    if (user?.id && dettagliAstaRecuperata?.id) {
-      //DISPATCH DELLA CHIAMATA CHE REGISTRA UTENTE A ASTA
+    if (!user || !dettagliAstaRecuperata) return;
+
+    const utenteGiaPresente = dettagliAstaRecuperata.utenti?.some(
+      (u) => u.id === user.id
+    );
+
+    if (!utenteGiaPresente) {
       dispatch(addUserToAstaAction(dettagliAstaRecuperata.id, user.id));
     }
-  }, [user?.id, dettagliAstaRecuperata?.id, dispatch]);
+  }, [user, dettagliAstaRecuperata]);
+
+  console.log("ID asta FE:", dettagliAstaRecuperata?.id);
+
+  // useEffect(() => {
+  //   if (user?.id && dettagliAstaRecuperata?.id) {
+  //     //DISPATCH DELLA CHIAMATA CHE REGISTRA UTENTE A ASTA
+  //     dispatch(addUserToAstaAction(dettagliAstaRecuperata.id, user.id));
+  //   }
+  // }, [user?.id, dettagliAstaRecuperata?.id, dispatch]);
 
   const [calciatoreSelezionato, setCalciatoreSelezionato] = useState({});
   const handleSelezionaCalciatore = (calciatore) => {

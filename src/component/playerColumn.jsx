@@ -3,7 +3,12 @@ import { Col, Form, InputGroup, Row } from "react-bootstrap";
 import { ArrowBarDown, ArrowBarUp, Coin } from "react-bootstrap-icons";
 import "../style/playerColumn.css";
 
-const PlayerColumn = ({ nomeUtente, utenteId, ultimoAcquisto }) => {
+const PlayerColumn = ({
+  nomeUtente,
+  utenteId,
+  ultimoAcquisto,
+  dettagliAsta,
+}) => {
   const [countP, setCountP] = useState(3);
   const [countD, setCountD] = useState(8);
   const [countC, setCountC] = useState(8);
@@ -17,12 +22,11 @@ const PlayerColumn = ({ nomeUtente, utenteId, ultimoAcquisto }) => {
     A: Array(6).fill(null),
   });
 
-  // 🔥 CARICA dati dal DB SOLO all'avvio (o dopo refresh)
   useEffect(() => {
     const caricaDatiIniziali = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/api/rosa/utente/${utenteId}`
+          `http://localhost:3001/api/rosa/utente/${utenteId}/sessioni/${dettagliAsta.id}`
         );
         const data = await response.json();
 
