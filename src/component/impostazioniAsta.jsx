@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { creaAstaAction } from "../redux/actions/creaAstaAction";
 import PillNav from "./PillNav/PillNav";
-
+import "./AnimatedList/AnimatedList/AnimatedList";
+import AnimatedList from "./AnimatedList/AnimatedList/AnimatedList";
 const ImpostazioniAsta = () => {
   const dispatch = useDispatch();
   const [nAllenatori, setNAllenatori] = useState(0);
@@ -122,19 +123,13 @@ const ImpostazioniAsta = () => {
             <h1 className=" text-center fw-bolder text-black">LE TUE ASTE</h1>
             <hr />
             {listaAste ? (
-              <ul className="text-center overflow-y-scroll h-25">
-                {listaAste?.map((asta, index) => (
-                  <a
-                    href={`http://localhost:5173/sessioniAsta/${asta.id}`}
-                    key={index}
-                    className=" list-unstyled text-decoration-none text-light"
-                  >
-                    <li key={index} className=" bg-dark my-1 rounded-3 mx-1  ">
-                      {asta.nome}
-                    </li>
-                  </a>
-                ))}
-              </ul>
+              <AnimatedList
+                items={listaAste}
+                onItemSelect={(item, index) => console.log(item, index)}
+                showGradients={true}
+                enableArrowNavigation={true}
+                displayScrollbar={true}
+              />
             ) : (
               <h2>Effettua login per accedere alle tue aste</h2>
             )}
