@@ -66,7 +66,7 @@ const PlayerColumn = ({
     if (utenteId) {
       caricaDatiIniziali();
     }
-  }, [utenteId, dettagliAsta?.id]); // Esegue SOLO una volta all'avvio
+  }, [utenteId, dettagliAsta?.id]);
 
   useEffect(() => {
     if (!ultimoAcquisto) return;
@@ -120,6 +120,17 @@ const PlayerColumn = ({
   const [sizeArrow1, setSizeArrow1] = useState("fs-3");
   const [sizeArrow2, setSizeArrow2] = useState("");
 
+  const calcolaPercentuale = (ruolo) => {
+    const listaGiocatori = caselle[ruolo];
+    const spesaPerReparto = listaGiocatori.reduce((acc, giocatore) => {
+      return acc + (giocatore?.prezzo || 0);
+    }, 0);
+    const budget = dettagliAsta?.crediti;
+    if (budget === 0) return 0;
+    const percentuale = (spesaPerReparto / budget) * 100;
+    //METODO PER PRENDERE SOLO LA PRIMA CIFRA DOPO LA VIRGOLA. CEIL E FLOOR TROPPO POCO SPEFICI
+    return Math.trunc(percentuale * 10) / 10;
+  };
   return (
     <>
       <Col className="mx-3 my-5 p-0" xs={12} md={1}>
@@ -143,7 +154,7 @@ const PlayerColumn = ({
                   <div>
                     <div className={`rounded-3 p-0 m-0 ${colorClass} d-flex`}>
                       <span className="text-white ms-1">{role}</span>
-                      <p className="m-0 mx-auto">0%</p>
+                      <p className="m-0 mx-auto">{calcolaPercentuale(role)}%</p>
                     </div>
                   </div>
                   <ArrowBarUp

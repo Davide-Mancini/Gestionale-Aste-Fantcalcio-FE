@@ -67,11 +67,16 @@ const SignInButton = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button
+            className=" rounded-pill border-2 fw-bold"
+            variant="outline-danger"
+            onClick={handleClose}
+          >
             Chiudi
           </Button>
           <Button
-            variant="primary"
+            className=" text-light fw-bold rounded-pill"
+            variant="warning"
             onClick={() => {
               handleSignIn();
             }}

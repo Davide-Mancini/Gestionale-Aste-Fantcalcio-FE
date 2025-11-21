@@ -12,6 +12,7 @@ import Stomp, { over } from "stompjs";
 import { getAstaCalciatoreById } from "../redux/actions/getAstaCalciatoreByid";
 import { astaTerminataAction } from "../redux/actions/astaTerminataAction";
 import { addUserToAstaAction } from "../redux/actions/addUserToAstaAction";
+import PillNav from "./PillNav/PillNav";
 
 const Asta = () => {
   // dichiaro dispatch per poter usare lo useDispatch
@@ -267,9 +268,7 @@ const Asta = () => {
 
   return (
     <>
-      <MyNavbar />
       <Container fluid>
-        <h2 className=" mt-5">{dettagliAstaRecuperata?.nome_asta}</h2>
         {/* Passo le mie funzioni alla search bar tramite props */}
         <Searchbar
           offertaAttuale={offertaAttuale}
@@ -285,6 +284,7 @@ const Asta = () => {
           astaCalciatore={astaCalciatore}
           offerente={offerente}
           handleFineAsta={handleFineAsta}
+          dettagliAstaRecuperata={dettagliAstaRecuperata}
         />
         <Griglia />
       </Container>

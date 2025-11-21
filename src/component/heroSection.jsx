@@ -7,7 +7,7 @@ const HeroSection = () => {
     <>
       <Container
         /*class="container col-xxl-8 px-4 py-5" */ fluid
-        className=" px-4 py-5 col-xxl-8 w-100"
+        className=" px-4  col-xxl-8 w-100"
       >
         <Row
           /*</Container>class="row flex-lg-row-reverse align-items-center g-5 py-5" */ className=" d-flex align-items-center g-5 py-5 flex-lg-row-reverse "

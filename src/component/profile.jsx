@@ -8,6 +8,7 @@ import "../style/profile.css";
 import { uploadImg } from "../redux/actions/uploadImgActions";
 import { Link } from "react-router-dom";
 import PillNav from "./PillNav/PillNav";
+import AnimatedList from "./AnimatedList/AnimatedList/AnimatedList";
 export const Profile = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -78,7 +79,7 @@ export const Profile = () => {
           {/* INSERISCO LA LISTA DELLE ASTE DELL'UTENTE LOGGATO */}
           <Col md={4} className=" bg-warning rounded-3">
             <h2 className=" text-center">LE TUE ASTE</h2>
-            <ul className="overflow-y-scroll h-25 text-center">
+            {/* <ul className="overflow-y-scroll h-25 text-center">
               {listaAste?.map((asta, index) => (
                 <a
                   href={`http://localhost:5173/sessioniAsta/${asta.id}`}
@@ -89,8 +90,19 @@ export const Profile = () => {
                     {asta.nome}
                   </li>
                 </a>
-              ))}
-            </ul>
+              ))} */}
+            {listaAste ? (
+              <AnimatedList
+                items={listaAste}
+                onItemSelect={(item, index) => console.log(item, index)}
+                showGradients={true}
+                enableArrowNavigation={true}
+                displayScrollbar={true}
+              />
+            ) : (
+              <h2>Effettua login per accedere alle impostazioni del profilo</h2>
+            )}
+            {/* </ul> */}
           </Col>
         </Row>
       </Container>

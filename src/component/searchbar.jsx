@@ -5,15 +5,27 @@ import {
   Container,
   Form,
   ListGroup,
+  Modal,
   Row,
 } from "react-bootstrap";
 import "../style/searchbar.css";
 import { useEffect, useState } from "react";
-import { Coin, HourglassSplit } from "react-bootstrap-icons";
+import {
+  ArrowLeft,
+  ArrowLeftCircle,
+  Cloud,
+  CloudArrowUpFill,
+  CloudFill,
+  Coin,
+  Copy,
+  HourglassSplit,
+  PeopleFill,
+} from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCalciatoriAction } from "../redux/actions/getAllCalciatori";
 
 import { GetAstaByIdAction } from "../redux/actions/getAstaByIdActions";
+import { Link } from "react-router-dom";
 
 const Searchbar = ({
   offertaAttuale,
@@ -28,6 +40,7 @@ const Searchbar = ({
   offerente,
   handleFineAsta,
   azzeraOfferta,
+  dettagliAstaRecuperata,
 }) => {
   const dispatch = useDispatch();
   //DEFINISCO IL FILTRO DA PASSARE AL MOMENTO DEL DISPATCH DEL'ACTION
@@ -124,25 +137,108 @@ const Searchbar = ({
   console.log("ASTA CALCIATOREEEE", astaCalciatore);
   console.log("Calciatoreee", calciatoreSelezionato);
   console.log("offerta attuale", offertaAttuale);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const [copia, setCopia] = useState(false);
+  const handleCopia = () => {
+    const testoDaCopiare = `http://localhost:5173/sessioniAsta/${dettagliAstaRecuperata?.id}`;
+    navigator.clipboard.writeText(testoDaCopiare);
+    setCopia(true);
+    setTimeout(() => {
+      setCopia(false);
+    }, 3000);
+  };
+  const [show2, setShow2] = useState(false);
+
+  const handleClose2 = () => setShow2(false);
+  const handleShow2 = () => setShow2(true);
   return (
     <>
-      <Container fluid className=" mt-4 bg-warning rounded-5">
+      <div className=" d-flex">
+        <Button
+          variant="outline-light mt-2"
+          className=" rounded-pill"
+          onClick={handleShow2}
+        >
+          <ArrowLeft className=" fs-3" />
+        </Button>
+        <Modal show={show2} onHide={handleClose2}>
+          <Modal.Header closeButton>
+            <Modal.Title>Torna in Homepage</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Sei sicuro di voler uscire dall'asta?</Modal.Body>
+          <Modal.Footer>
+            <Link
+              to={"/"}
+              className=" text-light btn btn-warning"
+              onClick={handleClose2}
+            >
+              Si
+            </Link>
+            <Button variant="danger" onClick={handleClose2}>
+              No
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <h3 className=" mt-2 ms-2 text-warning">
+          {dettagliAstaRecuperata?.nome_asta}
+        </h3>
+      </div>
+      <div className=" d-flex flex-row-reverse me-5 mb-2">
+        <Button variant="outline-light" className=" mx-1">
+          <CloudArrowUpFill className=" me-1 fs-5" />
+          ESPORTA ASTA
+        </Button>
+        <Button variant="outline-warning" onClick={handleShow}>
+          <PeopleFill className=" me-1 fs-5" />
+          INVITA AMICI
+        </Button>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Invita Amici</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Invia il link qui sotto ai tuoi amici per farli partecipare all'asta{" "}
+          </Modal.Body>
+          <Modal.Body className=" fw-bold ">
+            <small>
+              http://localhost:5173/sessioniAsta/{dettagliAstaRecuperata?.id}
+            </small>
+            <Button
+              variant="warning"
+              className=" p-0 ms-2 fw-bold text-light w-25"
+              onClick={handleCopia}
+            >
+              <Copy className=" me-2" />
+              {copia ? "COPIATO!" : "COPIA"}
+            </Button>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Chiudi
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+      <Container fluid className=" bg-warning rounded-5">
         <Row>
-          <Col xs={12} md={8} className=" mb-5 px-5">
-            {timer == 0 && (
-              <Alert>
+          {timer == 0 && (
+            <Alert>
+              {" "}
+              <span className=" fw-bold">{offerente}</span> ha acquistato{" "}
+              <span className=" fw-bold">
                 {" "}
-                <span className=" fw-bold">{offerente}</span> ha acquistato{" "}
-                <span className=" fw-bold">
-                  {" "}
-                  {astaCalciatore ? astaCalciatore.nomeCalciatore : ""}
-                </span>{" "}
-                per <span className=" fw-bold">{offertaAttuale}</span> FM
-              </Alert>
-            )}
+                {astaCalciatore ? astaCalciatore.nomeCalciatore : ""}
+              </span>{" "}
+              per <span className=" fw-bold">{offertaAttuale}</span> FM
+            </Alert>
+          )}
+          <Col xs={12} md={8} className=" mb-5 px-5">
             <Form className="d-flex margine">
               <div className=" d-flex flex-column w-100">
-                <h1>Cerca Giocatore</h1>
+                <h1 className=" fw-bold">Cerca Giocatore</h1>
                 <Form.Control
                   type="search"
                   placeholder="Cerca giocatore"
@@ -278,7 +374,6 @@ const Searchbar = ({
                 alt=""
                 className=" d-block mx-auto h-100"
               />
-              <h1>{calciatoreSelezionato.nomeCompleto}</h1>
             </div>
           </Col>
         </Row>
