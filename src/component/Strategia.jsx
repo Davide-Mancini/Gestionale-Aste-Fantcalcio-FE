@@ -42,6 +42,7 @@ const downloadCsv = (data, filename = "giocatori_preferiti.csv") => {
     "Quotazione",
     "Prezzo Asta Proposto (crediti)",
     "Percentuale Budget (%)",
+    "Appunti",
   ];
   const csvData = data.map((calciatore) => {
     const prezzoAsta = calciatore.prezzoAsta || 0;
@@ -96,6 +97,33 @@ const Strategia = () => {
     valore: "",
     pageNumber: 0,
   });
+  const [nomeStrategia, setNomeStrategia] = useState("");
+  const [budgetStrategia, setBudgetStrategia] = useState(500);
+  const [appunti, setAppunti] = useState("");
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [playerDetailsTemporanei, setPlayerDetailsTemporanei] = useState({});
+
+  const handleStrategyChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "strategyName") setNomeStrategia(value);
+    if (name === "strategyBudget") setBudgetStrategia(parseInt(value, 10) || 0);
+    if (name === "strategyNotes") setAppunti(value);
+  };
+
+  const handlePlayerDetailChange = (id, field, value) => {
+    setPlayerDetailsTemporanei((prev) => ({
+      ...prev,
+      [id]: {
+        ...(prev[id] || {}),
+        [field]: field === "prezzoAsta" ? parseInt(value, 10) || "" : value,
+      },
+    }));
+  };
+
+  const getPlayerDetail = (id, field) => {
+    const details = playerDetailsTemporanei[id];
+    return details ? details[field] : "";
+  };
   useEffect(() => {
     const attesaDigitazione = setTimeout(() => {
       dispatch(getAllCalciatoriAction(filters));
@@ -132,14 +160,14 @@ const Strategia = () => {
         direzione === "next" ? prev.pageNumber + 1 : prev.pageNumber - 1,
     }));
   };
-  const [prezziTemporanei, setPrezziTemporanei] = useState({});
-  const handlePrezzoChange = (id, value) => {
-    const prezzo = value === "" ? "" : parseInt(value, 10);
-    setPrezziTemporanei((prev) => ({
-      ...prev,
-      [id]: prezzo,
-    }));
-  };
+  // const [prezziTemporanei, setPrezziTemporanei] = useState({});
+  // const handlePrezzoChange = (id, value) => {
+  //   const prezzo = value === "" ? "" : parseInt(value, 10);
+  //   setPrezziTemporanei((prev) => ({
+  //     ...prev,
+  //     [id]: prezzo,
+  //   }));
+  // };
   const [percentuali, setPercentuali] = useState({});
   const handlePercentuale = (id, valore) => {
     const percentuale = valore === "" ? "" : parseFloat(valore);
@@ -147,7 +175,7 @@ const Strategia = () => {
   };
   console.log(percentuali);
   const [show2, setShow2] = useState(false);
-
+  console.log(lista.pageNumber);
   const handleClose2 = () => setShow2(false);
   const handleShow2 = () => setShow2(true);
   const [giocatoriMiPiace, setGiocatoriMiPiace] = useState([]);
@@ -205,16 +233,147 @@ const Strategia = () => {
           return;
         }
       }
-      const prezzoAsta = prezziTemporanei[calciatoreId] || 0;
+      const tempDetails = playerDetailsTemporanei[calciatoreId] || {};
+      const prezzoAsta = tempDetails.prezzoAsta || 0;
+      const tipo = tempDetails.tipo || "SCOMMESSA";
+      const appuntiGiocatore = tempDetails.appuntiGiocatore || "";
       setGiocatoriMiPiace((prevGiocatoreMiPiace) => [
         ...prevGiocatoreMiPiace,
-        { ...calciatoreDaGestire, prezzoAsta: prezzoAsta },
+        {
+          ...calciatoreDaGestire,
+          prezzoAsta: prezzoAsta,
+          tipo: tipo,
+          appuntiGiocatore: appuntiGiocatore,
+        },
       ]);
     }
   };
+
+  const [listaStrategie, setListaStrategie] = useState([]);
+  const [loadingStrategie, setLoadingStrategie] = useState(true);
+
+  const fetchAllStrategie = async () => {
+    setLoadingStrategie(true);
+
+    try {
+      const response = await fetch("http://localhost:3001/strategie", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Errore nel recupero delle strategie.");
+      }
+
+      const data = await response.json();
+      setListaStrategie(data);
+    } catch (error) {
+      console.error("Errore:", error);
+    } finally {
+      setLoadingStrategie(false);
+    }
+  };
+
+  useEffect(() => {
+    // Chiama la funzione al caricamento del componente
+    fetchAllStrategie();
+  }, []);
+  const tipi = ["SCOMMESSA", "TITOLARE", "BOMBER", "JOLLY"];
+  const user = useSelector((state) => {
+    return state.signIn.user;
+  });
+  const handleSaveStrategy = () => {
+    const dettagliPayload = giocatoriMiPiace.map((g) => ({
+      calciatoreId: g.id,
+      prezzoProposto: g.prezzoAsta || 0,
+      tipo: g.tipo,
+      appuntiGiocatore: g.appuntiGiocatore,
+    }));
+
+    const strategiaPayload = {
+      nome: nomeStrategia || "Nuova Strategia",
+      budgetTotale: budgetStrategia,
+      appuntiGenerali: appunti,
+      dettagli: dettagliPayload,
+      utente: user?.id,
+    };
+
+    if (dettagliPayload.length === 0) {
+      alert(
+        "Aggiungi almeno un calciatore alla tua strategia prima di salvare!"
+      );
+      return;
+    }
+
+    console.log("Payload da inviare:", strategiaPayload);
+    fetch("http://localhost:3001/strategie", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // "Authorization": `Bearer ${tuoToken}`
+      },
+      body: JSON.stringify(strategiaPayload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Errore durante il salvataggio");
+        return res.json();
+      })
+      .then((data) => {
+        alert(`Strategia '${data.nome}' salvata con successo!`);
+        setGiocatoriMiPiace([]);
+        setNomeStrategia("");
+        setAppunti("");
+        setPlayerDetailsTemporanei({});
+        setShowSaveModal(false);
+      })
+      .catch((err) => {
+        console.error("Errore di salvataggio:", err);
+        alert("Errore nel salvataggio della strategia. Controlla la console.");
+      });
+  };
   console.log(lista);
   console.log(giocatoriMiPiace);
+  const [strategiaCaricata, setStrategiaCaricata] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const fetchStrategiaById = async (strategiaId) => {
+    if (!strategiaId) return;
+    setIsLoading(true);
+    setError(null);
 
+    const options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:3001/strategie/${strategiaId}`,
+        options
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Errore HTTP: ${response.status} - Impossibile trovare la strategia.`
+        );
+      }
+
+      const data = await response.json();
+      setStrategiaCaricata(data);
+    } catch (err) {
+      console.error("Errore nel recupero della strategia:", err);
+      setError("Impossibile caricare la strategia.");
+      setStrategiaCaricata(null);
+    } finally {
+      // 5. Fine Caricamento
+      setIsLoading(false);
+    }
+  };
   return (
     <>
       <div className=" d-flex justify-content-center">
@@ -268,25 +427,103 @@ const Strategia = () => {
       <Container fluid>
         {" "}
         <Row className=" mt-5">
-          <Col className=" d-flex mb-2">
+          <Col
+            xs={12}
+            md={2}
+            className=" d-flex flex-column justify-content-center"
+          >
             <Button
               variant="warning"
-              className=" text-light fw-bold rounded-pill me-2"
+              className=" text-light fw-bold rounded-pill mb-1"
+              onClick={() => setShowSaveModal(true)}
             >
               Crea Strategia <span>+</span>
             </Button>
+            {loadingStrategie ? (
+              <p>Caricamento strategie salvate...</p>
+            ) : (
+              <Form.Select
+                className=" bg-warning rounded-pill  text-light text-center fw-bold border-0"
+                onChange={(e) => fetchStrategiaById(e.target.value)}
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Seleziona strategia
+                </option>
+                {listaStrategie.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.nome} (Budget: {s.budget})
+                  </option>
+                ))}
+              </Form.Select>
+            )}
+          </Col>
+
+          <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Salva la tua Strategia</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Nome Strategia</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="strategyName"
+                    value={nomeStrategia}
+                    onChange={handleStrategyChange}
+                    placeholder="Es. Titolari Low Cost"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Budget Totale (Crediti)</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="strategyBudget"
+                    value={budgetStrategia}
+                    onChange={handleStrategyChange}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label>Appunti Generali</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    name="strategyNotes"
+                    value={appunti}
+                    onChange={handleStrategyChange}
+                  />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowSaveModal(false)}
+              >
+                Annulla
+              </Button>
+              <Button
+                variant="warning"
+                className="text-light"
+                onClick={handleSaveStrategy}
+              >
+                Conferma e Salva
+              </Button>
+            </Modal.Footer>
+          </Modal>
+          <Col xs={12} md={7}>
             <Form.Control
               type="text"
               placeholder="Cerca Giocatore"
-              className=" w-50"
               name="cognome"
               onChange={gestioneFiltri}
               value={filters.cognome}
             ></Form.Control>
-            <ButtonGroup>
+            <ButtonGroup className=" w-100 mt-1">
               {radios.map((radio, idx) => (
                 <ToggleButton
-                  className=" rounded-pill mx-1"
+                  className="rounded-pill mx-1"
                   key={idx}
                   id={`radio-${idx}`}
                   type="radio"
@@ -310,6 +547,8 @@ const Strategia = () => {
                 </ToggleButton>
               ))}
             </ButtonGroup>
+          </Col>
+          <Col xs={12} md={3}>
             <Button
               variant="outline-light"
               className=" rounded-pill ms-2"
@@ -330,7 +569,7 @@ const Strategia = () => {
             </Button>
           </Col>
         </Row>
-        <Row>
+        <Row className=" mt-3">
           <Col xs={12} md={8}>
             {lista.map((calciatore) => {
               const selezionato = giocatoriMiPiace.some(
@@ -355,72 +594,112 @@ const Strategia = () => {
                       className="imgsize me-3"
                     />
 
-                    <div className=" w-25">
+                    <Col className=" w-25">
                       <h5 className=" m-0">{calciatore?.nome_completo}</h5>
                       <p className=" m-0">{calciatore?.squadra}</p>
-                    </div>
-                    <div className=" d-flex justify-content-center flex-column align-items-center">
-                      <div className=" d-flex align-items-center  ">
+                    </Col>
+                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                      <Col className=" d-flex align-items-center  ">
                         <Coin className=" me-1 text-warning" />
                         <small className=" m-0">Prezzo</small>
-                      </div>
+                      </Col>
                       <Form.Control
                         type="number"
-                        className=" trasparente w-50 text-warning text-center"
+                        className=" trasparente text-warning text-center"
                         value={
-                          prezziTemporanei[calciatore?.id]
-                            ? prezziTemporanei[calciatore?.id]
-                            : (percentuali * 500) / 100 || ""
+                          getPlayerDetail(calciatore?.id, "prezzoAsta") || ""
                         }
                         onChange={(e) =>
-                          handlePrezzoChange(calciatore?.id, e.target.value)
+                          handlePlayerDetailChange(
+                            calciatore?.id,
+                            "prezzoAsta",
+                            e.target.value
+                          )
                         }
                         disabled={selezionato}
                       ></Form.Control>
-                    </div>
-                    <div className=" d-flex justify-content-center flex-column align-items-center">
-                      <div className=" d-flex align-items-center  ">
+                    </Col>
+                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                      <Col className=" d-flex align-items-center  ">
                         <Percent className=" me-1 text-warning" />
                         <small>Budget</small>
-                      </div>
+                      </Col>
                       <Form.Control
                         type="number"
-                        className=" trasparente w-50 text-warning"
+                        className=" trasparente text-warning"
                         onChange={(e) => {
                           handlePercentuale(calciatore?.id, e.target.value);
                         }}
                         value={
-                          prezziTemporanei[calciatore?.id]
-                            ? (prezziTemporanei[calciatore?.id] * 100) / 500
-                            : percentuali || ""
+                          budgetStrategia > 0 &&
+                          getPlayerDetail(calciatore?.id, "prezzoAsta") > 0
+                            ? (
+                                (getPlayerDetail(calciatore?.id, "prezzoAsta") *
+                                  100) /
+                                budgetStrategia
+                              ).toFixed(1)
+                            : 0
                         }
                       ></Form.Control>
-                    </div>
-                    <div className=" d-flex justify-content-center flex-column align-items-center">
-                      <div className=" d-flex align-items-center  ">
+                    </Col>
+                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                      <Col className=" d-flex align-items-center  ">
                         <Journals className=" me-1 text-warning" />
                         <small>Appunti</small>
-                      </div>
-                      <Form.Control className=" trasparente w-50 text-warning text-center"></Form.Control>
-                    </div>
-                    <div className=" d-flex justify-content-center flex-column align-items-center">
-                      <div className=" d-flex align-items-center  ">
+                      </Col>
+                      <Form.Control
+                        className=" trasparente text-warning text-center"
+                        value={getPlayerDetail(
+                          calciatore?.id,
+                          "appuntiGiocatore"
+                        )}
+                        onChange={(e) =>
+                          handlePlayerDetailChange(
+                            calciatore?.id,
+                            "appuntiGiocatore",
+                            e.target.value
+                          )
+                        }
+                        disabled={selezionato}
+                      ></Form.Control>
+                    </Col>
+                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                      <Col className=" d-flex align-items-center  ">
                         <Journals className=" me-1 text-warning" />
-                        <small>Appunti</small>
-                      </div>
-                      <Form.Control className=" trasparente w-50 text-warning text-center"></Form.Control>
-                    </div>
-                    <div className=" d-flex justify-content-center flex-column align-items-center">
-                      <div className=" d-flex align-items-center  ">
+                        <small>Tipo</small>
+                      </Col>
+                      <Form.Select
+                        className=" trasparente text-warning text-center"
+                        value={
+                          getPlayerDetail(calciatore?.id, "tipo") || tipi[0]
+                        }
+                        onChange={(e) =>
+                          handlePlayerDetailChange(
+                            calciatore?.id,
+                            "tipo",
+                            e.target.value
+                          )
+                        }
+                        disabled={selezionato}
+                      >
+                        {tipi.map((tipo, index) => (
+                          <option key={index} value={tipo}>
+                            {tipo}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Col>
+                    <Col className=" d-flex justify-content-center flex-column align-items-center">
+                      <Col className=" d-flex align-items-center  ">
                         <GraphUpArrow className=" me-1 text-warning" />
                         <small>Quotazione</small>
-                      </div>
+                      </Col>
                       <Form.Control
-                        className=" trasparente w-50 text-warning text-center"
+                        className=" trasparente text-warning text-center"
                         readOnly
                         value={calciatore?.valore}
                       ></Form.Control>
-                    </div>
+                    </Col>
                   </Col>
                 </Row>
               );
@@ -428,56 +707,143 @@ const Strategia = () => {
           </Col>
           <Col xs={12} md={4} className=" text-light">
             <h2 className=" text-center">Strategia</h2>
-            {giocatoriMiPiace.map((calciatore) => {
-              return (
-                <>
+            {isLoading && (
+              <p className="text-warning text-center">
+                Caricamento in corso...
+              </p>
+            )}
+            {error && <p className="text-danger text-center">{error}</p>}
+            {strategiaCaricata && !isLoading && (
+              <>
+                <p>{strategiaCaricata.nome}</p>
+                <p>
+                  Appunti Strategia:{" "}
+                  {strategiaCaricata.appuntiGenerali ||
+                    "Nessun appunto presente per questa strategia"}
+                </p>
+                {strategiaCaricata.dettagli.map((dettaglio) => (
                   <div
+                    key={dettaglio.id}
                     className={` rounded-pill text-center d-flex mb-1 justify-content-around align-items-center ${
-                      calciatore?.ruolo === "P"
+                      dettaglio?.calciatori?.ruolo === "P"
                         ? "bg-warning"
-                        : calciatore?.ruolo === "D"
+                        : dettaglio?.calciatori?.ruolo === "D"
                         ? "bg-success"
-                        : calciatore?.ruolo === "C"
+                        : dettaglio?.calciatori?.ruolo === "C"
                         ? "bg-primary"
-                        : calciatore?.ruolo === "A"
+                        : dettaglio?.calciatori?.ruolo === "A"
                         ? "bg-danger"
                         : ""
                     }`}
                   >
-                    <img
-                      src={calciatore.campioncino}
-                      alt=""
-                      style={{ width: "40px" }}
-                      className=" ms-1"
-                    />
-
-                    <div className="">
+                    <Col className="">
                       <small>Ruolo</small>
-                      <p className=" fw-bold ">{calciatore?.ruolo}</p>
-                    </div>
-                    <div key={calciatore?.id}>
-                      <small>Nome</small>
-                      <p className=" fw-bold ">{calciatore.cognome}</p>
-                    </div>
-                    <div>
-                      <small>Prezzo</small>
-                      <p className=" fw-bold">{calciatore.prezzoAsta}</p>
-                    </div>
-                    <div>
-                      <small>Budget %</small>
-                      <p className=" fw-bold">
-                        {(calciatore.prezzoAsta * 100) / 500}
+                      <p className=" fw-bold ">
+                        {dettaglio?.calciatori?.ruolo}
                       </p>
-                    </div>
+                    </Col>
+                    <Col>
+                      <small>Nome</small>
+                      <p className=" fw-bold ">
+                        {dettaglio?.calciatori?.cognome}
+                      </p>
+                    </Col>
+                    <Col>
+                      <small>Prezzo</small>
+                      <p className=" fw-bold">{dettaglio?.prezzoProposto}</p>
+                    </Col>
+                    <Col>
+                      <small>Budget %</small>
+                      <p className=" fw-bold">{dettaglio?.percentuale}</p>
+                    </Col>
+                    <Col>
+                      <small>Tipo</small>
+                      <p className=" fw-bold">{dettaglio?.tipoGiocatore}</p>
+                    </Col>
+                    <Col>
+                      <small>Appunti</small>
+                      <p
+                        className=" fw-bold text-truncate"
+                        style={{ maxWidth: "50px" }}
+                        title={dettaglio?.appuntiGiocatore}
+                      >
+                        {dettaglio?.appuntiGiocatore ? "..." : "-"}
+                      </p>
+                    </Col>
                     <X
                       style={{ cursor: "pointer" }}
                       className=" fs-3 text-danger end"
                       onClick={() => {
-                        handleMiPiace(calciatore);
+                        handleMiPiace(dettaglio);
                       }}
                     />
                   </div>
-                </>
+                ))}
+              </>
+            )}
+            {giocatoriMiPiace.map((calciatore) => {
+              return (
+                <div
+                  key={calciatore?.id}
+                  className={` rounded-pill text-center d-flex mb-1 justify-content-around align-items-center ${
+                    calciatore?.ruolo === "P"
+                      ? "bg-warning"
+                      : calciatore?.ruolo === "D"
+                      ? "bg-success"
+                      : calciatore?.ruolo === "C"
+                      ? "bg-primary"
+                      : calciatore?.ruolo === "A"
+                      ? "bg-danger"
+                      : ""
+                  }`}
+                >
+                  {/* <img
+                      src={calciatore.campioncino}
+                      alt=""
+                      style={{ width: "40px" }}
+                      className=" ms-1"
+                    /> */}
+
+                  <Col className="">
+                    <small>Ruolo</small>
+                    <p className=" fw-bold ">{calciatore?.ruolo}</p>
+                  </Col>
+                  <Col key={calciatore?.id}>
+                    <small>Nome</small>
+                    <p className=" fw-bold ">{calciatore.cognome}</p>
+                  </Col>
+                  <Col>
+                    <small>Prezzo</small>
+                    <p className=" fw-bold">{calciatore.prezzoAsta}</p>
+                  </Col>
+                  <Col>
+                    <small>Budget %</small>
+                    <p className=" fw-bold">
+                      {(calciatore.prezzoAsta * 100) / budgetStrategia}
+                    </p>
+                  </Col>
+                  <Col>
+                    <small>Tipo</small>
+                    <p className=" fw-bold">{calciatore.tipo}</p>
+                  </Col>
+                  <Col>
+                    <small>Appunti</small>
+                    <p
+                      className=" fw-bold text-truncate"
+                      style={{ maxWidth: "50px" }}
+                      title={calciatore.appuntiGiocatore}
+                    >
+                      {calciatore.appuntiGiocatore ? "..." : "-"}
+                    </p>
+                  </Col>
+                  <X
+                    style={{ cursor: "pointer" }}
+                    className=" fs-3 text-danger end"
+                    onClick={() => {
+                      handleMiPiace(calciatore);
+                    }}
+                  />
+                </div>
               );
             })}
           </Col>
@@ -493,6 +859,7 @@ const Strategia = () => {
             className=" text-light fs-3"
             onClick={() => cambiaPagina("next")}
           />
+          <p className=" text-light">{lista?.pageNumber}</p>
         </Row>
       </Container>
     </>
