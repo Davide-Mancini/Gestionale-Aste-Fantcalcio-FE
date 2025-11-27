@@ -79,6 +79,13 @@ const HomePage = () => {
   };
   const urlUploaded = useSelector((state) => state.uploader.url);
   const imageSrc = urlUploaded || user?.avatar;
+  const [modificaPassword, setModificaPassword] = useState(false);
+  const handleModificaPassword = () => {
+    setModificaPassword(true);
+    setTimeout(() => {
+      setModificaPassword(false);
+    }, 60000);
+  };
   return (
     <>
       <div className=" d-flex justify-content-center">
@@ -201,6 +208,24 @@ const HomePage = () => {
                       setEmail(e.target.value);
                     }}
                   ></Form.Control>
+                  {!modificaPassword ? (
+                    <small
+                      className=" text-decoration-underline"
+                      style={{ cursor: "pointer" }}
+                      onClick={handleModificaPassword}
+                    >
+                      Modifica Password
+                    </small>
+                  ) : (
+                    <>
+                      <p className=" m-0">Vecchia Password</p>
+                      <Form.Control></Form.Control>
+                      <p className=" m-0">Nuova Password</p>
+                      <Form.Control></Form.Control>
+                      <p className=" m-0">Ripeti Nuova Password</p>
+                      <Form.Control></Form.Control>
+                    </>
+                  )}
                 </Modal.Body>
               ) : (
                 <Modal.Body>
@@ -211,12 +236,16 @@ const HomePage = () => {
               )}
 
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button
+                  className=" rounded-pill border-2 fw-bold"
+                  variant="outline-danger"
+                  onClick={handleClose}
+                >
                   Chiudi
                 </Button>
                 <Button
+                  className=" text-light fw-bold rounded-pill"
                   variant="warning"
-                  className=" text-light"
                   onClick={handleModifiche}
                 >
                   Salva Modifiche
@@ -240,7 +269,11 @@ const HomePage = () => {
                 <SignInButton />
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button
+                  className=" rounded-pill border-2 fw-bold"
+                  variant="outline-danger"
+                  onClick={handleClose}
+                >
                   Chiudi
                 </Button>
               </Modal.Footer>

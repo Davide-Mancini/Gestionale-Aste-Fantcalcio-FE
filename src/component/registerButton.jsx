@@ -134,10 +134,19 @@ const RegisterButton = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button
+            className=" rounded-pill border-2 fw-bold"
+            variant="outline-danger"
+            onClick={handleClose}
+          >
             Chiudi
           </Button>
-          <Button variant="primary" type="submit" onClick={handleRegister}>
+          <Button
+            className=" text-light fw-bold rounded-pill"
+            variant="warning"
+            type="submit"
+            onClick={handleRegister}
+          >
             Registrati
           </Button>
         </Modal.Footer>

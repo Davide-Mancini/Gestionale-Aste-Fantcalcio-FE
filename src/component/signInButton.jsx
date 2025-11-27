@@ -22,6 +22,14 @@ const SignInButton = () => {
   }, [signInState]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [passwordDimenticata, setPasswordDimenticata] = useState(false);
+  const handlePasswordDimenticata = () => {
+    setPasswordDimenticata(true);
+    setTimeout(() => {
+      setPasswordDimenticata(false);
+    }, 30000);
+  };
+  const [mailInviata, setMailInviata] = useState(false);
   return (
     <>
       <Button
@@ -63,6 +71,40 @@ const SignInButton = () => {
                 }}
               />
             </Form.Group>
+            {!passwordDimenticata ? (
+              <small
+                className=" text-decoration-underline"
+                style={{ cursor: "pointer" }}
+                onClick={handlePasswordDimenticata}
+              >
+                Password dimenticata?
+              </small>
+            ) : (
+              <>
+                {!mailInviata ? (
+                  <>
+                    <p>Inserisci email di recupero</p>
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control type="email" autoFocus />
+                    <div className=" d-flex justify-content-end">
+                      <Button
+                        className=" rounded-pill  mt-2"
+                        onClick={() => {
+                          setMailInviata(true);
+                        }}
+                      >
+                        Invia mail
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <p>
+                    Inviata! Segui le istruzioni nella mail per il recupero
+                    della password{" "}
+                  </p>
+                )}
+              </>
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>

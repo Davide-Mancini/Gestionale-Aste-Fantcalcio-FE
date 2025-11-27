@@ -186,8 +186,8 @@ const ImpostazioniAsta = () => {
               <hr />
               <h2 className="  ">Effettua login per creare una nuova asta</h2>
               <p>
-                Per poter creare iniziare una nuova asta è necesssario essere
-                registrati ed aver effettuato il login
+                Per poter iniziare una nuova asta è necesssario essere
+                registrati ed aver effettuato l'accesso
               </p>
               <div className=" d-flex justify-content-center">
                 <SignInButton />
