@@ -1,5 +1,6 @@
 import { Col, Container, Row } from "react-bootstrap";
 import { Coin, Lightbulb, Sliders } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 
 const Steps = () => {
   return (
@@ -12,10 +13,17 @@ const Steps = () => {
             className=" text-center border-end border-warning"
           >
             <Lightbulb className=" fs-1 my-3 text-warning" />
-            <h3 className=" text-warning">Crea la tua strategia!</h3>
+            <Link
+              className=" h3 text-warning d-block text-decoration-none"
+              to={"/strategia"}
+            >
+              Crea la tua strategia!
+            </Link>
+
             <p className=" text-light">
-              Crea la tua strategia d'asta, nella sezione "STRATEGIE", definisci
-              il budget per ogni reparto.
+              Crea la tua strategia d'asta nella sezione "STRATEGIE", definisci
+              il budget per ogni giocatore, prendi appunti ed esporta tutto in
+              un file CSV
             </p>
           </Col>
           <Col
@@ -24,7 +32,13 @@ const Steps = () => {
             className=" text-center border-end border-warning"
           >
             <Sliders className=" fs-1 my-3 text-warning" />
-            <h3 className=" text-warning">Imposta l'asta</h3>
+            <Link
+              className=" h3 text-warning d-block text-decoration-none"
+              to={"/impostazioni-asta"}
+            >
+              Imposta l'asta
+            </Link>
+
             <p className=" text-light">
               Definisci le regole dell'asta: quanti fanta allenatori, quanti
               fanta milioni, modificatore difesa.

@@ -295,7 +295,32 @@ const PillNav = ({
           <ul className="pill-list" role="menubar">
             {items.map((item, i) => (
               <li key={item.href || `item-${i}`} role="none">
-                {isRouterLink(item.href) ? (
+                {item.onClick ? (
+                  <button
+                    role="menuitem"
+                    onClick={item.onClick}
+                    className={` border-0 pill${
+                      activeHref === item.href ? " is-active" : ""
+                    }`}
+                    aria-label={item.ariaLabel || item.label}
+                    onMouseEnter={() => handleEnter(i)}
+                    onMouseLeave={() => handleLeave(i)}
+                  >
+                    <span
+                      className="hover-circle"
+                      aria-hidden="true"
+                      ref={(el) => {
+                        circleRefs.current[i] = el;
+                      }}
+                    />
+                    <span className="label-stack">
+                      <span className="pill-label">{item.label}</span>
+                      <span className="pill-label-hover" aria-hidden="true">
+                        {item.label}
+                      </span>
+                    </span>
+                  </button>
+                ) : isRouterLink(item.href) ? (
                   <Link
                     role="menuitem"
                     to={item.href}

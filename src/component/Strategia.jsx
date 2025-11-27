@@ -29,6 +29,8 @@ import { useEffect, useState } from "react";
 import { getAllCalciatoriAction } from "../redux/actions/getAllCalciatori";
 import "../style/Strategia.css";
 import { Link } from "react-router-dom";
+import RegisterButton from "./registerButton";
+import SignInButton from "./signInButton";
 //FUNZIONE PER ESPORTARE STRATEGIE IN FILE CSV
 const downloadCsv = (data, filename = "giocatori_preferiti.csv") => {
   if (data.length === 0) {
@@ -274,7 +276,7 @@ const Strategia = () => {
     // Chiama la funzione al caricamento del componente
     fetchAllStrategie();
   }, []);
-  const tipi = ["-", "SCOMMESSA", "TITOLARE", "BOMBER", "JOLLY"];
+  const tipi = ["O", "SCOMMESSA", "TITOLARE", "BOMBER", "JOLLY"];
   const user = useSelector((state) => {
     return state.signIn.user;
   });
@@ -512,11 +514,12 @@ const Strategia = () => {
               name="cognome"
               onChange={gestioneFiltri}
               value={filters.cognome}
+              className=" shadow-none"
             ></Form.Control>
             <ButtonGroup className=" w-100 mt-1">
               {radios.map((radio, idx) => (
                 <ToggleButton
-                  className="rounded-pill mx-1"
+                  className="rounded-pill mx-1 border-3"
                   key={idx}
                   id={`radio-${idx}`}
                   type="radio"
@@ -544,7 +547,7 @@ const Strategia = () => {
           <Col xs={12} md={3}>
             <Button
               variant="outline-light"
-              className=" rounded-pill ms-2"
+              className=" rounded-pill ms-2 border-3"
               onClick={handleExportCsv}
             >
               <CloudArrowUpFill className=" me-2" />
@@ -552,7 +555,7 @@ const Strategia = () => {
             </Button>
             <Button
               variant="outline-danger"
-              className=" ms-2 rounded-pill"
+              className=" ms-2 rounded-pill border-3"
               onClick={() => {
                 setGiocatoriMiPiace([]);
               }}
@@ -562,299 +565,319 @@ const Strategia = () => {
             </Button>
           </Col>
         </Row>
-        <Row className=" mt-3">
-          <Col xs={12} md={8}>
-            {lista.map((calciatore) => {
-              const selezionato = giocatoriMiPiace.some(
-                (g) => g.id === calciatore?.id
-              );
-              return (
-                <Row key={calciatore?.id} className=" mt-2">
-                  <Col className=" d-flex text-light align-items-center  ">
-                    <Heart
-                      style={{ cursor: "pointer" }}
-                      className={`fs-3 me-3 ${
-                        selezionato ? "text-danger" : " "
-                      } `}
-                      onClick={() => {
-                        handleMiPiace(calciatore);
-                      }}
-                    />
-
-                    <img
-                      src={calciatore?.campioncino}
-                      alt=""
-                      className="imgsize me-3"
-                    />
-
-                    <Col className=" w-25">
-                      <h5 className=" m-0">{calciatore?.nome_completo}</h5>
-                      <p className=" m-0">{calciatore?.squadra}</p>
-                    </Col>
-                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
-                      <Col className=" d-flex align-items-center  ">
-                        <Coin className=" me-1 text-warning" />
-                        <small className=" m-0">Prezzo</small>
-                      </Col>
-                      <Form.Control
-                        type="number"
-                        className="form-strategia trasparente text-warning text-center"
-                        value={
-                          getPlayerDetail(calciatore?.id, "prezzoAsta") || ""
-                        }
-                        onChange={(e) =>
-                          handlePlayerDetailChange(
-                            calciatore?.id,
-                            "prezzoAsta",
-                            e.target.value
-                          )
-                        }
-                        disabled={selezionato}
-                      ></Form.Control>
-                    </Col>
-                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
-                      <Col className=" d-flex align-items-center  ">
-                        <Percent className=" me-1 text-warning" />
-                        <small>Budget</small>
-                      </Col>
-                      <Form.Control
-                        type="number"
-                        className="form-strategia trasparente text-warning text-center"
-                        onChange={(e) => {
-                          handlePercentuale(calciatore?.id, e.target.value);
+        {!user ? (
+          <div className=" vh-100 text-center text-light mt-5">
+            <h1>Effettua Login per creare strategie</h1>
+            <p>
+              Per usufruire del tool di Strategia è necessario essere registrati
+              ed aver effettuato l'accesso
+            </p>
+            <SignInButton />
+            <RegisterButton />
+          </div>
+        ) : (
+          <Row className=" mt-3">
+            <Col xs={12} md={8}>
+              {lista.map((calciatore) => {
+                const selezionato = giocatoriMiPiace.some(
+                  (g) => g.id === calciatore?.id
+                );
+                return (
+                  <Row key={calciatore?.id} className=" mt-2">
+                    <Col className=" d-flex text-light align-items-center  ">
+                      <Heart
+                        style={{ cursor: "pointer" }}
+                        className={`fs-3 me-3 ${
+                          selezionato ? "text-danger" : " "
+                        } `}
+                        onClick={() => {
+                          handleMiPiace(calciatore);
                         }}
-                        value={
-                          budgetStrategia > 0 &&
-                          getPlayerDetail(calciatore?.id, "prezzoAsta") > 0
-                            ? (
-                                (getPlayerDetail(calciatore?.id, "prezzoAsta") *
-                                  100) /
-                                budgetStrategia
-                              ).toFixed(1)
-                            : 0
-                        }
-                      ></Form.Control>
-                    </Col>
-                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
-                      <Col className=" d-flex align-items-center  ">
-                        <Journals className=" me-1 text-warning" />
-                        <small>Appunti</small>
+                      />
+
+                      <img
+                        src={calciatore?.campioncino}
+                        alt=""
+                        className="imgsize me-3"
+                      />
+
+                      <Col className=" w-25">
+                        <h5 className=" m-0">{calciatore?.nome_completo}</h5>
+                        <p className=" m-0">{calciatore?.squadra}</p>
                       </Col>
-                      <Form.Control
-                        className="form-strategia trasparente text-warning text-center"
-                        value={getPlayerDetail(
-                          calciatore?.id,
-                          "appuntiGiocatore"
-                        )}
-                        onChange={(e) =>
-                          handlePlayerDetailChange(
+                      <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                        <Col className=" d-flex align-items-center  ">
+                          <Coin className=" me-1 text-warning" />
+                          <small className=" m-0">Prezzo</small>
+                        </Col>
+                        <Form.Control
+                          type="number"
+                          className="form-strategia trasparente text-warning text-center"
+                          value={
+                            getPlayerDetail(calciatore?.id, "prezzoAsta") || ""
+                          }
+                          onChange={(e) =>
+                            handlePlayerDetailChange(
+                              calciatore?.id,
+                              "prezzoAsta",
+                              e.target.value
+                            )
+                          }
+                          disabled={selezionato}
+                        ></Form.Control>
+                      </Col>
+                      <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                        <Col className=" d-flex align-items-center  ">
+                          <Percent className=" me-1 text-warning" />
+                          <small>Budget</small>
+                        </Col>
+                        <Form.Control
+                          type="number"
+                          className="form-strategia trasparente text-warning text-center"
+                          onChange={(e) => {
+                            handlePercentuale(calciatore?.id, e.target.value);
+                          }}
+                          value={
+                            budgetStrategia > 0 &&
+                            getPlayerDetail(calciatore?.id, "prezzoAsta") > 0
+                              ? (
+                                  (getPlayerDetail(
+                                    calciatore?.id,
+                                    "prezzoAsta"
+                                  ) *
+                                    100) /
+                                  budgetStrategia
+                                ).toFixed(1)
+                              : 0
+                          }
+                        ></Form.Control>
+                      </Col>
+                      <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                        <Col className=" d-flex align-items-center  ">
+                          <Journals className=" me-1 text-warning" />
+                          <small>Appunti</small>
+                        </Col>
+                        <Form.Control
+                          className="form-strategia trasparente text-warning text-center"
+                          value={getPlayerDetail(
                             calciatore?.id,
-                            "appuntiGiocatore",
-                            e.target.value
-                          )
-                        }
-                        disabled={selezionato}
-                      ></Form.Control>
-                    </Col>
-                    <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
-                      <Col className=" d-flex align-items-center  ">
-                        <EyeFill className=" me-1 text-warning" />
-                        <small>Tipo</small>
+                            "appuntiGiocatore"
+                          )}
+                          onChange={(e) =>
+                            handlePlayerDetailChange(
+                              calciatore?.id,
+                              "appuntiGiocatore",
+                              e.target.value
+                            )
+                          }
+                          disabled={selezionato}
+                        ></Form.Control>
                       </Col>
-                      <Form.Select
-                        name="tipo"
-                        className=" trasparente text-warning text-center px-0"
-                        value={
-                          getPlayerDetail(calciatore?.id, "tipo") || tipi[0]
-                        }
-                        onChange={(e) =>
-                          handlePlayerDetailChange(
-                            calciatore?.id,
-                            "tipo",
-                            e.target.value
-                          )
-                        }
-                        disabled={selezionato}
-                      >
-                        {tipi.map((tipo) => (
-                          <option className=" bg-dark" key={tipo} value={tipo}>
-                            {tipo}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Col>
-                    <Col className=" d-flex justify-content-center flex-column align-items-center">
-                      <Col className=" d-flex align-items-center  ">
-                        <GraphUpArrow className=" me-1 text-warning" />
-                        <small>Quotazione</small>
+                      <Col className=" d-flex justify-content-center flex-column align-items-center me-1">
+                        <Col className=" d-flex align-items-center  ">
+                          <EyeFill className=" me-1 text-warning" />
+                          <small>Tipo</small>
+                        </Col>
+                        <Form.Select
+                          name="tipo"
+                          className=" trasparente text-warning text-center px-0"
+                          value={
+                            getPlayerDetail(calciatore?.id, "tipo") || tipi[0]
+                          }
+                          onChange={(e) =>
+                            handlePlayerDetailChange(
+                              calciatore?.id,
+                              "tipo",
+                              e.target.value
+                            )
+                          }
+                          disabled={selezionato}
+                        >
+                          {tipi.map((tipo) => (
+                            <option
+                              className=" bg-dark"
+                              key={tipo}
+                              value={tipo}
+                            >
+                              {tipo}
+                            </option>
+                          ))}
+                        </Form.Select>
                       </Col>
-                      <Form.Control
-                        className="form-strategia trasparente text-warning text-center"
-                        readOnly
-                        value={calciatore?.valore}
-                      ></Form.Control>
+                      <Col className=" d-flex justify-content-center flex-column align-items-center">
+                        <Col className=" d-flex align-items-center  ">
+                          <GraphUpArrow className=" me-1 text-warning" />
+                          <small>Quotazione</small>
+                        </Col>
+                        <Form.Control
+                          className="form-strategia trasparente text-warning text-center"
+                          readOnly
+                          value={calciatore?.valore}
+                        ></Form.Control>
+                      </Col>
                     </Col>
-                  </Col>
-                </Row>
-              );
-            })}
-          </Col>
-          <Col xs={12} md={4} className=" text-light">
-            <h2 className=" text-center">Strategia</h2>
-            {isLoading && (
-              <p className="text-warning text-center">
-                Caricamento in corso...
-              </p>
-            )}
-            {error && <p className="text-danger text-center">{error}</p>}
-            {strategiaCaricata && !isLoading && (
-              <>
-                <p className=" text-center">{`(${strategiaCaricata.nome})`}</p>
-                <p>
-                  Appunti Strategia: <br />
-                  {strategiaCaricata.appunti ||
-                    "Nessun appunto presente per questa strategia"}
+                  </Row>
+                );
+              })}
+
+              <div className=" d-flex justify-content-center ">
+                <ArrowLeft
+                  style={{ cursor: "pointer" }}
+                  className=" text-light fs-3"
+                  onClick={() => cambiaPagina("prev")}
+                />
+
+                <ArrowRight
+                  style={{ cursor: "pointer" }}
+                  className=" text-light fs-3"
+                  onClick={() => cambiaPagina("next")}
+                />
+              </div>
+            </Col>
+            <Col xs={12} md={4} className=" text-light">
+              <h2 className=" text-center">Strategia</h2>
+              {isLoading && (
+                <p className="text-warning text-center">
+                  Caricamento in corso...
                 </p>
-                {strategiaCaricata.dettagli.map((dettaglio) => (
+              )}
+              {error && <p className="text-danger text-center">{error}</p>}
+              {strategiaCaricata && !isLoading && (
+                <>
+                  <p className=" text-center">{`(${strategiaCaricata.nome})`}</p>
+                  <p>
+                    Appunti Strategia: <br />
+                    {strategiaCaricata.appunti ||
+                      "Nessun appunto presente per questa strategia"}
+                  </p>
+                  {strategiaCaricata.dettagli.map((dettaglio) => (
+                    <div
+                      key={dettaglio.id}
+                      className={` rounded-pill text-center d-flex mb-1 justify-content-around align-items-center ${
+                        dettaglio?.calciatori?.ruolo === "P"
+                          ? "bg-warning"
+                          : dettaglio?.calciatori?.ruolo === "D"
+                          ? "bg-success"
+                          : dettaglio?.calciatori?.ruolo === "C"
+                          ? "bg-primary"
+                          : dettaglio?.calciatori?.ruolo === "A"
+                          ? "bg-danger"
+                          : ""
+                      }`}
+                    >
+                      <Col className="">
+                        <small>Ruolo</small>
+                        <p className=" fw-bold ">
+                          {dettaglio?.calciatori?.ruolo}
+                        </p>
+                      </Col>
+                      <Col>
+                        <small>Nome</small>
+                        <p className=" fw-bold ">
+                          {dettaglio?.calciatori?.cognome}
+                        </p>
+                      </Col>
+                      <Col>
+                        <small>Prezzo</small>
+                        <p className=" fw-bold">{dettaglio?.prezzoProposto}</p>
+                      </Col>
+                      <Col>
+                        <small>Budget %</small>
+                        <p className=" fw-bold">{dettaglio?.percentuale}</p>
+                      </Col>
+                      <Col>
+                        <small>Tipo</small>
+                        <p className=" fw-bold">{dettaglio?.tipoGiocatore}</p>
+                      </Col>
+                      <Col>
+                        <small>Appunti</small>
+                        <p
+                          className=" fw-bold text-truncate"
+                          style={{ maxWidth: "50px" }}
+                          title={dettaglio?.appuntiGiocatore}
+                        >
+                          {dettaglio?.appuntiGiocatore ? "..." : "-"}
+                        </p>
+                      </Col>
+                      <X
+                        style={{ cursor: "pointer" }}
+                        className=" fs-3 text-danger end"
+                        onClick={() => {
+                          handleMiPiace(dettaglio);
+                        }}
+                      />
+                    </div>
+                  ))}
+                </>
+              )}
+              {giocatoriMiPiace.map((calciatore) => {
+                return (
                   <div
-                    key={dettaglio.id}
+                    key={calciatore?.id}
                     className={` rounded-pill text-center d-flex mb-1 justify-content-around align-items-center ${
-                      dettaglio?.calciatori?.ruolo === "P"
+                      calciatore?.ruolo === "P"
                         ? "bg-warning"
-                        : dettaglio?.calciatori?.ruolo === "D"
+                        : calciatore?.ruolo === "D"
                         ? "bg-success"
-                        : dettaglio?.calciatori?.ruolo === "C"
+                        : calciatore?.ruolo === "C"
                         ? "bg-primary"
-                        : dettaglio?.calciatori?.ruolo === "A"
+                        : calciatore?.ruolo === "A"
                         ? "bg-danger"
                         : ""
                     }`}
                   >
-                    <Col className="">
-                      <small>Ruolo</small>
-                      <p className=" fw-bold ">
-                        {dettaglio?.calciatori?.ruolo}
-                      </p>
-                    </Col>
-                    <Col>
-                      <small>Nome</small>
-                      <p className=" fw-bold ">
-                        {dettaglio?.calciatori?.cognome}
-                      </p>
-                    </Col>
-                    <Col>
-                      <small>Prezzo</small>
-                      <p className=" fw-bold">{dettaglio?.prezzoProposto}</p>
-                    </Col>
-                    <Col>
-                      <small>Budget %</small>
-                      <p className=" fw-bold">{dettaglio?.percentuale}</p>
-                    </Col>
-                    <Col>
-                      <small>Tipo</small>
-                      <p className=" fw-bold">{dettaglio?.tipoGiocatore}</p>
-                    </Col>
-                    <Col>
-                      <small>Appunti</small>
-                      <p
-                        className=" fw-bold text-truncate"
-                        style={{ maxWidth: "50px" }}
-                        title={dettaglio?.appuntiGiocatore}
-                      >
-                        {dettaglio?.appuntiGiocatore ? "..." : "-"}
-                      </p>
-                    </Col>
-                    <X
-                      style={{ cursor: "pointer" }}
-                      className=" fs-3 text-danger end"
-                      onClick={() => {
-                        handleMiPiace(dettaglio);
-                      }}
-                    />
-                  </div>
-                ))}
-              </>
-            )}
-            {giocatoriMiPiace.map((calciatore) => {
-              return (
-                <div
-                  key={calciatore?.id}
-                  className={` rounded-pill text-center d-flex mb-1 justify-content-around align-items-center ${
-                    calciatore?.ruolo === "P"
-                      ? "bg-warning"
-                      : calciatore?.ruolo === "D"
-                      ? "bg-success"
-                      : calciatore?.ruolo === "C"
-                      ? "bg-primary"
-                      : calciatore?.ruolo === "A"
-                      ? "bg-danger"
-                      : ""
-                  }`}
-                >
-                  {/* <img
+                    {/* <img
                       src={calciatore.campioncino}
                       alt=""
                       style={{ width: "40px" }}
                       className=" ms-1"
                     /> */}
 
-                  <Col className="">
-                    <small>Ruolo</small>
-                    <p className=" fw-bold ">{calciatore?.ruolo}</p>
-                  </Col>
-                  <Col key={calciatore?.id}>
-                    <small>Nome</small>
-                    <p className=" fw-bold ">{calciatore.cognome}</p>
-                  </Col>
-                  <Col>
-                    <small>Prezzo</small>
-                    <p className=" fw-bold">{calciatore.prezzoAsta}</p>
-                  </Col>
-                  <Col>
-                    <small>Budget %</small>
-                    <p className=" fw-bold">
-                      {(calciatore.prezzoAsta * 100) / budgetStrategia}
-                    </p>
-                  </Col>
-                  <Col>
-                    <small>Tipo</small>
-                    <p className=" fw-bold">{calciatore.tipo}</p>
-                  </Col>
-                  <Col>
-                    <small>Appunti</small>
-                    <p
-                      className=" fw-bold text-truncate"
-                      style={{ maxWidth: "50px" }}
-                      title={calciatore.appuntiGiocatore}
-                    >
-                      {calciatore.appuntiGiocatore ? "..." : "-"}
-                    </p>
-                  </Col>
-                  <X
-                    style={{ cursor: "pointer" }}
-                    className=" fs-3 text-danger end"
-                    onClick={() => {
-                      handleMiPiace(calciatore);
-                    }}
-                  />
-                </div>
-              );
-            })}
-          </Col>
-          {lista?.pageNumber !== 0 && (
-            <ArrowLeft
-              style={{ cursor: "pointer" }}
-              className=" text-light fs-3"
-              onClick={() => cambiaPagina("prev")}
-            />
-          )}
-          <ArrowRight
-            style={{ cursor: "pointer" }}
-            className=" text-light fs-3"
-            onClick={() => cambiaPagina("next")}
-          />
-          <p className=" text-light">{lista?.pageNumber}</p>
-        </Row>
+                    <Col className="">
+                      <small>Ruolo</small>
+                      <p className=" fw-bold ">{calciatore?.ruolo}</p>
+                    </Col>
+                    <Col key={calciatore?.id}>
+                      <small>Nome</small>
+                      <p className=" fw-bold ">{calciatore.cognome}</p>
+                    </Col>
+                    <Col>
+                      <small>Prezzo</small>
+                      <p className=" fw-bold">{calciatore.prezzoAsta}</p>
+                    </Col>
+                    <Col>
+                      <small>Budget %</small>
+                      <p className=" fw-bold">
+                        {(calciatore.prezzoAsta * 100) / budgetStrategia}
+                      </p>
+                    </Col>
+                    <Col>
+                      <small>Tipo</small>
+                      <p className=" fw-bold">{calciatore.tipo}</p>
+                    </Col>
+                    <Col>
+                      <small>Appunti</small>
+                      <p
+                        className=" fw-bold text-truncate"
+                        style={{ maxWidth: "50px" }}
+                        title={calciatore.appuntiGiocatore}
+                      >
+                        {calciatore.appuntiGiocatore ? "..." : "-"}
+                      </p>
+                    </Col>
+                    <X
+                      style={{ cursor: "pointer" }}
+                      className=" fs-3 text-danger end"
+                      onClick={() => {
+                        handleMiPiace(calciatore);
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   );

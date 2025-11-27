@@ -62,7 +62,7 @@ const ImpostazioniAsta = () => {
               { label: "ASTA", href: "/impostazioni-asta" },
               { label: "STRATEGIA", href: "/strategia" },
               { label: "CAMPETTO", href: "/campetto" },
-              { label: "PROFILO", href: "/profile" },
+              { label: "PROFILO", href: "#" },
             ]}
             activeHref="/"
             className="custom-nav"
@@ -76,33 +76,44 @@ const ImpostazioniAsta = () => {
         <Row className="  mt-5">
           <Col
             xs={12}
-            md={2}
+            md={3}
             className=" bg-warning rounded-3 mt-3 text-center"
           >
-            <h1 className=" text-center fw-bolder text-dark">
-              LE TUE STRATEGIE
-            </h1>
-            <Link
-              to={"/strategia"}
-              className="  btn btn-outline-dark rounded-pill border-2 fw-bold"
-            >
-              Nuova Strategia +
-            </Link>
-            <hr />
-            {loadingStrategie ? (
-              <p>Caricamento strategie salvate...</p>
+            {user ? (
+              <>
+                <h2 className=" text-center fw-bold text-dark ">
+                  LE TUE STRATEGIE
+                </h2>
+                <h5 className=" text-light text-center">
+                  Dai un'occhiata alle tue strategie
+                </h5>
+                <hr />
+
+                {loadingStrategie ? (
+                  <p>Caricamento strategie salvate...</p>
+                ) : (
+                  <AnimatedList2
+                    items={listaStrategie}
+                    onItemSelect={(item, index) => console.log(item, index)}
+                    showGradients={true}
+                    enableArrowNavigation={true}
+                    displayScrollbar={true}
+                  />
+                )}
+              </>
             ) : (
-              <AnimatedList2
-                items={listaStrategie}
-                onItemSelect={(item, index) => console.log(item, index)}
-                showGradients={true}
-                enableArrowNavigation={true}
-                displayScrollbar={true}
-              />
+              <>
+                <h2 className=" text-center fw-bold text-dark">
+                  LE TUE STRATEGIE
+                </h2>
+                <h5 className=" text-light text-center">
+                  Accedi per visualizzare tutte le tue strategie...
+                </h5>
+              </>
             )}
           </Col>
           {user ? (
-            <Col xs={12} md={8} className=" bg-dark rounded-3 text-center">
+            <Col xs={12} md={6} className=" bg-dark rounded-3 text-center">
               <h1
                 className=" text-center fw-bolder text-warning"
                 style={{ fontSize: "70px" }}
@@ -166,34 +177,45 @@ const ImpostazioniAsta = () => {
               </Button>
             </Col>
           ) : (
-            <Col xs={12} md={8} className=" bg-dark rounded-3">
-              <h1 className=" text-center fw-bolder text-warning">
-                CREA NUOVA ASTA
-              </h1>
+            <Col
+              xs={12}
+              md={6}
+              className="text-center text-light bg-dark rounded-3"
+            >
+              <h1 className="fw-bolder text-warning">CREA NUOVA ASTA</h1>
               <hr />
-              <h2 className=" text-warning text-center">
-                Effettua login per creare una nuova asta
-              </h2>
+              <h2 className="  ">Effettua login per creare una nuova asta</h2>
+              <p>
+                Per poter creare iniziare una nuova asta è necesssario essere
+                registrati ed aver effettuato il login
+              </p>
               <div className=" d-flex justify-content-center">
                 <SignInButton />
                 <RegisterButton />
               </div>
             </Col>
           )}
-          <Col xs={12} md={2} className=" bg-warning rounded-3 mt-3">
-            <h1 className=" text-center fw-bolder text-dark">LE TUE ASTE</h1>
-            <p>Rivedi le tue aste o riprendile da dove le hai lasciate </p>
-            <hr />
+          <Col xs={12} md={3} className=" bg-warning rounded-3 mt-3">
+            <h2 className=" text-center fw-bolder text-dark">LE TUE ASTE</h2>
             {listaAste ? (
-              <AnimatedList
-                items={listaAste}
-                onItemSelect={(item, index) => console.log(item, index)}
-                showGradients={true}
-                enableArrowNavigation={true}
-                displayScrollbar={true}
-              />
+              <>
+                <h5 className=" text-light text-center">
+                  Rivedi le tue aste o riprendile da dove le hai lasciate{" "}
+                </h5>
+                <hr />
+
+                <AnimatedList
+                  items={listaAste}
+                  onItemSelect={(item, index) => console.log(item, index)}
+                  showGradients={true}
+                  enableArrowNavigation={true}
+                  displayScrollbar={true}
+                />
+              </>
             ) : (
-              <h2>Effettua login per accedere alle tue aste</h2>
+              <h5 className=" text-light text-center">
+                Accedi per visualizzare lo storico delle tue aste...
+              </h5>
             )}
           </Col>
         </Row>

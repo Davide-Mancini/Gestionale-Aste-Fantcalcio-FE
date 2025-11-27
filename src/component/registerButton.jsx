@@ -57,7 +57,7 @@ const RegisterButton = () => {
 
       <Button
         variant="outline-warning"
-        className=" me-1 mt-3 border-3 rounded-pill"
+        className=" me-1 mt-3 border-3 rounded-pill fw-bold"
         onClick={handleShow}
       >
         Registrati

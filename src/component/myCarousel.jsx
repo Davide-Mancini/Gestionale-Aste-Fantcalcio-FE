@@ -20,14 +20,14 @@ function Mycarousel() {
   return (
     <Container className=" border rounded-5 text-light my-5 gradienteDiSfondo ">
       <Row>
-        <Col xs={12} md={3}>
+        <Col xs={12} md={3} className="position-relative ">
           <iframe
             id="sofa-standings-embed-33-76457"
             src="https://widgets.sofascore.com/it/embed/tournament/33/season/76457/standings/Serie%20A%2025%2F26?widgetTitle=Serie%20A%2025%2F26&showCompetitionLogo=true"
-            style={{ height: "1123px", maxWidth: "768px", width: "100%" }}
-            className=" position-relative overflow-x-auto p-4 "
+            style={{ height: "1123px", maxWidth: "308px" }}
+            className="h-100 overflow-x-auto p-4 "
           ></iframe>
-          <div className=" position-absolute z-3">
+          <div className=" bottone-classifica position-absolute  z-3">
             <Button>Classifica Completa</Button>
           </div>
         </Col>

@@ -19,7 +19,7 @@ const HeroSection = () => {
             {/* UTILIZZO COMPONENTE DI REACT BITS */}
             <TextType
               text={[
-                "Il nuovo tool per la gestione della tua asta!",
+                "Il nuovo tool per la gestione delle aste!",
                 "Facile! Veloce! Intuitivo!",
                 "Inizia a rilanciare!",
               ]}

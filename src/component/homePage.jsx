@@ -47,9 +47,14 @@ const HomePage = () => {
     }
   }, [user]);
   //FUNZIONE CHE DISPATCHA L'ACTION DI MODIFICA
+  const [effettuate, setEffettuate] = useState(false);
   const handleModifiche = () => {
     dispatch(modificheUserAction(user.id, nome, cognome, username, email));
-    handleClose;
+    setEffettuate(true);
+    setTimeout(() => {
+      handleClose();
+      setEffettuate(false);
+    }, 2000);
   };
   const signInState = useSelector((state) => {
     return state.signIn.isAuthenticated;
@@ -85,7 +90,7 @@ const HomePage = () => {
             { label: "ASTA", href: "/impostazioni-asta" },
             { label: "STRATEGIA", href: "/strategia" },
             { label: "CAMPETTO", href: "/campetto" },
-            { label: "PROFILO", href: "/profile" },
+            { label: "PROFILO", href: "#", onClick: handleShow },
           ]}
           activeHref="/"
           className="custom-nav"
@@ -148,66 +153,102 @@ const HomePage = () => {
           </div>
         </>
       )}
-      {show && (
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Profilo</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {" "}
-            <div className=" w-100 text-center ">
-              <img src={imageSrc} alt="" className=" w-50 rounded-4" />
-              <Form.Group controlId="formFile" className="mb-3 ">
-                <Form.Control
-                  type="file"
-                  onChange={handleUpload}
-                  className="file-upload w-50 mx-auto"
-                />
-              </Form.Group>
-            </div>
-            <p className=" m-0 ">Nome</p>
-            <Form.Control
-              value={nome}
-              onChange={(e) => {
-                setNome(e.target.value);
-              }}
-            ></Form.Control>
-            <p className=" m-0">Cognome</p>
-            <Form.Control
-              value={cognome}
-              onChange={(e) => {
-                setCognome(e.target.value);
-              }}
-            ></Form.Control>
-            <p className=" m-0">Username</p>
-            <Form.Control
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-            ></Form.Control>
-            <p className=" m-0">Email</p>
-            <Form.Control
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            ></Form.Control>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Chiudi
-            </Button>
-            <Button
-              variant="warning"
-              className=" text-light"
-              onClick={handleModifiche}
-            >
-              Salva Modifiche
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      {user ? (
+        <>
+          {show && (
+            <Modal show={show} onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Profilo</Modal.Title>
+              </Modal.Header>
+              {!effettuate ? (
+                <Modal.Body>
+                  {" "}
+                  <div className=" w-100 text-center ">
+                    <img src={imageSrc} alt="" className=" w-50 rounded-4" />
+                    <Form.Group controlId="formFile" className="mb-3 ">
+                      <Form.Control
+                        type="file"
+                        onChange={handleUpload}
+                        className="file-upload w-50 mx-auto"
+                      />
+                    </Form.Group>
+                  </div>
+                  <p className=" m-0 ">Nome</p>
+                  <Form.Control
+                    value={nome}
+                    onChange={(e) => {
+                      setNome(e.target.value);
+                    }}
+                  ></Form.Control>
+                  <p className=" m-0">Cognome</p>
+                  <Form.Control
+                    value={cognome}
+                    onChange={(e) => {
+                      setCognome(e.target.value);
+                    }}
+                  ></Form.Control>
+                  <p className=" m-0">Username</p>
+                  <Form.Control
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                    }}
+                  ></Form.Control>
+                  <p className=" m-0">Email</p>
+                  <Form.Control
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
+                  ></Form.Control>
+                </Modal.Body>
+              ) : (
+                <Modal.Body>
+                  <div>
+                    <h5>Modifiche effettuate con successo!</h5>
+                  </div>
+                </Modal.Body>
+              )}
+
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Chiudi
+                </Button>
+                <Button
+                  variant="warning"
+                  className=" text-light"
+                  onClick={handleModifiche}
+                >
+                  Salva Modifiche
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+        </>
+      ) : (
+        <>
+          {show && (
+            <Modal show={show} onHide={handleClose}>
+              <Modal.Header closeButton>
+                <Modal.Title>Profilo</Modal.Title>
+              </Modal.Header>
+              <Modal.Body className=" text-center">
+                <h3>
+                  Per visualizzare i dati del profilo devi prima effettuare
+                  l'accesso
+                </h3>
+                <SignInButton />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Chiudi
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+        </>
       )}
+
       <HeroSection />
       <Steps />
       <Mycarousel />
