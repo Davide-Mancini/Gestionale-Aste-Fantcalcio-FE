@@ -1,4 +1,4 @@
-import { Container } from "react-bootstrap";
+import { Button, Container, Form } from "react-bootstrap";
 import Griglia from "./griglia";
 import Searchbar from "./searchbar";
 import { useParams } from "react-router-dom";
@@ -10,6 +10,7 @@ import Stomp, { over } from "stompjs";
 import { getAstaCalciatoreById } from "../redux/actions/getAstaCalciatoreByid";
 import { astaTerminataAction } from "../redux/actions/astaTerminataAction";
 import { addUserToAstaAction } from "../redux/actions/addUserToAstaAction";
+import { ChatFill, Messenger, Send, X } from "react-bootstrap-icons";
 
 //METODO PER DOWNLOAS ED ESPORTAZIONE ROSE ASTA
 const downloadCsv = (data, filename = "acquisti.csv") => {
@@ -105,6 +106,10 @@ const Asta = () => {
   const [offertaAttuale, setOffertaAttuale] = useState(0);
   const [astaCalciatore, setAstaCalciatore] = useState(null);
   const [offerente, setOfferente] = useState(null);
+  const [messaggi, setMessaggi] = useState([]);
+  const [messaggio, setMessaggio] = useState("");
+  const nickname = user?.username;
+
   //Qui inizia la sottoscrizione del client al WebSocket
   useEffect(() => {
     //Se dettagliAstaRecuperata?.id o user?.id non sono presenti fermo subito l'esecuzione
@@ -147,6 +152,11 @@ const Asta = () => {
         const utenteEntrato = JSON.parse(message.body);
         console.log("Utente entrato:", utenteEntrato);
         dispatch(addUserToAstaAction(utenteEntrato));
+      });
+      client.subscribe("/topic/messages", (message) => {
+        const messaggioRicevuto = JSON.parse(message.body);
+        console.log("messaggio ricevuto", messaggioRicevuto);
+        setMessaggi((prevMessaggi) => [...prevMessaggi, messaggioRicevuto]);
       });
       // dispatch(addUserToAstaAction(astaId, user.id));
       if (!astaCalciatore?.id) return;
@@ -340,7 +350,21 @@ const Asta = () => {
       alert("Nessun giocatore acquistato da esportare.");
     }
   };
-
+  const [mostraChat, setMostraChat] = useState(false);
+  const handleMessaggio = (e) => {
+    setMessaggio(e.target.value);
+  };
+  const sendMessaggio = () => {
+    if (messaggio.trim()) {
+      const chatMessage = {
+        nickname,
+        content: messaggio,
+        immagine: user?.avatar,
+      };
+      stompClient.send("/app/chat", {}, JSON.stringify(chatMessage));
+    }
+    setMessaggio("");
+  };
   return (
     <>
       <Container fluid>
@@ -364,6 +388,67 @@ const Asta = () => {
           tutteLeRose={tutteLeRose}
         />
         <Griglia onRosaUpdate={handleRosaUpdate} />
+        <div className=" d-flex flex-row-reverse sticky-bottom">
+          <Button
+            onClick={() => {
+              setMostraChat(true);
+            }}
+            className=" mb-3"
+          >
+            <ChatFill />
+          </Button>
+        </div>
+        {mostraChat && (
+          <div className=" d-flex flex-row-reverse sticky-bottom">
+            <div className=" bg-light rounded-3 mb-3">
+              <div style={{ height: "300px" }} className=" bg-light rounded-3 ">
+                <div className=" d-flex flex-row-reverse border rounded-3 border-light bg-dark ">
+                  <X
+                    className=" text-danger fs-5"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setMostraChat(false);
+                    }}
+                  />
+                  <h4 className=" mx-auto text-warning">Chat</h4>
+                </div>
+                <ul
+                  className=" d-flex flex-column ps-0 ms-1 mt-3 text-dark"
+                  style={{ width: "250px" }}
+                >
+                  {messaggi.map((mex, index) => (
+                    <li
+                      key={index}
+                      className=" d-flex w-100 my-1 border-bottom pb-1"
+                    >
+                      <img
+                        src={mex.immagine}
+                        alt=""
+                        className=" rounded-pill me-1 "
+                        style={{ width: "20px", height: "20px" }}
+                      />
+                      <small className=" fw-bold me-1">{mex.nickname}:</small>
+                      <small className=" m-0 ">{mex.contenuto}</small>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className=" d-flex align-items-center">
+                <Form.Control
+                  value={messaggio}
+                  placeholder="Scrivi messaggio"
+                  className=" shadow-none ms-2 my-2"
+                  onChange={handleMessaggio}
+                ></Form.Control>
+                <Send
+                  className=" fs-4 mx-2 text-primary"
+                  style={{ cursor: "pointer" }}
+                  onClick={sendMessaggio}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </Container>
     </>
   );

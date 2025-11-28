@@ -58,8 +58,18 @@ const Searchbar = ({
   //     dispatch(GetAstaByIdAction(id));
   //   }
   // }, [id, dispatch]);
-  const lista = useSelector((state) => state.calciatori.calciatori);
 
+  const lista = useSelector((state) => state.calciatori.calciatori);
+  //Qui filtro la lista in base ai giocatori gia acquistati (già presenti nelle rose degli utenti) eliminando quelli gia presi.
+  //Cerco i giocatori già presi in tutteRose
+  const GiocatoriGiaPresi = Object.values(tutteLeRose || {})
+    .flat()
+    .map((g) => g["Nome Giocatore"]?.toLowerCase().trim());
+  //Filtro la listab originale con i giocatori gia presi
+  const listaFiltrata = lista?.filter((calciatore) => {
+    const cognomeCercato = calciatore.cognome?.toLowerCase().trim();
+    return !GiocatoriGiaPresi.includes(cognomeCercato);
+  });
   //DISPATCHO L'ACTION PASSANDOGLI I FILTRI
   //PER EVITARE CHIAMARE INUTILI: SE NON C'è NULLA NELL'INPUT NON FARE DISPATCH+ATTESA CHE L'UTENTE SMETTA DIS CRIVERE
 
@@ -157,6 +167,19 @@ const Searchbar = ({
   const handleClose2 = () => setShow2(false);
   const handleShow2 = () => setShow2(true);
   const hasAcquisti = Object.values(tutteLeRose).flat().length > 0;
+  const [showAlert, setShowAlert] = useState(false);
+  useEffect(() => {
+    let timerId;
+    if (timer === 0) {
+      setShowAlert(true);
+      timerId = setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+    }
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [timer]);
   return (
     <>
       <div className=" d-flex">
@@ -234,8 +257,8 @@ const Searchbar = ({
 
       <Container fluid className=" bg-warning rounded-5">
         <Row>
-          {timer == 0 && (
-            <Alert>
+          {showAlert && timer == 0 && (
+            <Alert className=" text-center">
               {" "}
               <span className=" fw-bold">{offerente}</span> ha acquistato{" "}
               <span className=" fw-bold">
@@ -259,9 +282,10 @@ const Searchbar = ({
                   onChange={gestioneFiltri}
                 />
                 <ListGroup>
-                  {lista?.map((calciatore) => {
+                  {listaFiltrata?.map((calciatore) => {
                     return (
                       <ListGroup.Item
+                        style={{ cursor: "pointer" }}
                         key={calciatore.id}
                         onClick={() => {
                           handleSelezionaCalciatore(calciatore);
@@ -304,8 +328,8 @@ const Searchbar = ({
                   <Coin className=" fs-1 text-warning me-2" />{" "}
                   <h1 className=" m-0 text-white">{offertaAttuale}</h1>{" "}
                 </div>
-                <div>
-                  <h3>{offerente}</h3>
+                <div className=" ms-2 d-flex justify-content-center align-items-center my-3 bg-dark p-2 rounded-pill w-25 border border-3 border-white">
+                  <h3 className=" text-light">{offerente || "-"}</h3>
                 </div>
               </Row>
             )}
@@ -313,7 +337,7 @@ const Searchbar = ({
               <Row className=" mt-2 text-center">
                 {astaCalciatore?.statoAsta !== "APERTA" && (
                   <Button
-                    className=" text-warning fs-5"
+                    className=" text-warning fs-5 rounded-pill fw-bold"
                     variant="dark"
                     onClick={() => {
                       handleIniziaAsta();
@@ -327,40 +351,42 @@ const Searchbar = ({
                 )}
               </Row>
             )}
-            {Object.keys(calciatoreSelezionato).length !== 0 && (
-              <Row className=" d-flex justify-content-evenly mt-3 ">
-                <button
-                  className="pushable w-25"
-                  onClick={() => {
-                    inviaRapido(1);
-                  }}
-                >
-                  <span className="shadow"></span>
-                  <span className="edge"></span>
-                  <span className="front"> +1 </span>
-                </button>
-                <button
-                  className="pushable w-25"
-                  onClick={() => {
-                    inviaRapido(5);
-                  }}
-                >
-                  <span className="shadow"></span>
-                  <span className="edge"></span>
-                  <span className="front"> +5 </span>
-                </button>
-                <button
-                  className="pushable w-25"
-                  onClick={() => {
-                    inviaRapido(10);
-                  }}
-                >
-                  <span className="shadow"></span>
-                  <span className="edge"></span>
-                  <span className="front"> +10 </span>
-                </button>
-              </Row>
-            )}
+            {Object.keys(calciatoreSelezionato).length !== 0 &&
+              astaCalciatore?.statoAsta === "APERTA" && (
+                <Row className=" d-flex justify-content-evenly mt-3 ">
+                  <button
+                    disabled={astaCalciatore?.statoAsta !== "APERTA"}
+                    className="pushable w-25"
+                    onClick={() => {
+                      inviaRapido(1);
+                    }}
+                  >
+                    <span className="shadow"></span>
+                    <span className="edge"></span>
+                    <span className="front"> +1 </span>
+                  </button>
+                  <button
+                    className="pushable w-25"
+                    onClick={() => {
+                      inviaRapido(5);
+                    }}
+                  >
+                    <span className="shadow"></span>
+                    <span className="edge"></span>
+                    <span className="front"> +5 </span>
+                  </button>
+                  <button
+                    className="pushable w-25"
+                    onClick={() => {
+                      inviaRapido(10);
+                    }}
+                  >
+                    <span className="shadow"></span>
+                    <span className="edge"></span>
+                    <span className="front"> +10 </span>
+                  </button>
+                </Row>
+              )}
           </Col>
           <Col
             xs={12}
