@@ -115,17 +115,19 @@ const ImpostazioniAsta = () => {
           </Col>
           {user ? (
             <Col xs={12} md={6} className=" bg-dark rounded-3 text-center">
-              <h1
-                className=" text-center fw-bolder text-warning"
-                style={{ fontSize: "70px" }}
-              >
-                CREA NUOVA ASTA
-              </h1>
+              <div className=" border border-3 border-warning rounded-4">
+                <h1
+                  className=" text-center fw-bolder text-light"
+                  style={{ fontSize: "70px" }}
+                >
+                  CREA NUOVA ASTA
+                </h1>
+              </div>
               <hr />
               <Col xs={12} className=" my-4 text-light">
                 <h2>Quanti Fanta Allenatori?</h2>
                 <Form.Select
-                  className=" w-25 select trasparente shadow-none border-0 text-warning px-0 text-center mx-auto"
+                  className="w-50 select trasparente shadow-none border-0 text-warning px-0 text-center mx-auto"
                   onChange={(e) => {
                     setNAllenatori(e.target.value);
                   }}
@@ -141,7 +143,7 @@ const ImpostazioniAsta = () => {
               <Col xs={12} className="text-light my-4">
                 <h2>Quanti Fanta Milioni?</h2>
                 <Form.Select
-                  className=" w-25 select trasparente shadow-none border-0 text-warning px-0 text-center mx-auto "
+                  className=" w-50 select trasparente shadow-none border-0 text-warning px-0 text-center mx-auto "
                   onChange={(e) => {
                     setNCrediti(e.target.value);
                   }}
@@ -157,7 +159,7 @@ const ImpostazioniAsta = () => {
                 <Form.Control
                   id="colorPlaceholder"
                   placeholder="Nome Asta"
-                  className="trasparente w-25  shadow-none border-0 text-warning text-center mx-auto"
+                  className="trasparente w-50  shadow-none border-0 text-warning text-center mx-auto"
                   type="text"
                   onChange={(e) => {
                     setNome(e.target.value);
@@ -167,7 +169,7 @@ const ImpostazioniAsta = () => {
 
               <Button
                 variant="warning"
-                className=" border-3 mt-5 w-50 rounded-pill text-light fs-4 fw-bolder"
+                className=" border-3 mt-5 w-75 rounded-pill text-light fs-4 fw-bolder"
                 onClick={() => {
                   dispatch(
                     creaAstaAction(nome, nAllenatori, nCrediti, navigate)

@@ -9,11 +9,13 @@ const HeroSection = () => {
       <Container fluid className=" px-4  col-xxl-8 w-100">
         <Row className=" d-flex align-items-center g-5 py-5 flex-lg-row-reverse ">
           <Col className="col-10 col-sm-8 col-lg-6 mx-auto">
-            <img
-              src="src/assets/macbook-air-m2-15-inch.png"
-              alt=""
+            <video
+              src="src/assets/macbook-air-m2-still (5).mp4"
               className=" w-100"
-            />
+              loop
+              muted
+              autoPlay
+            ></video>
           </Col>
           <Col className="col-lg-6 my-auto">
             {/* UTILIZZO COMPONENTE DI REACT BITS */}
@@ -31,7 +33,7 @@ const HeroSection = () => {
             />
 
             <p className=" lead text-light">
-              Organizza la tua asta nel modo perfetto, con AstaTool puoi gestire
+              Organizza la tua asta nel modo perfetto, con FantaHub puoi gestire
               la tua asta online in modo semplice! Pensa ad una strategia, crea
               l'asta, invita i tuoi amici e inizia a rilanciare il tuo giocatore
               preferito!
