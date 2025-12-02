@@ -57,7 +57,7 @@ const ImpostazioniAsta = () => {
       <Container fluid className=" min-vh-100 p-5 mx-auto">
         <div className=" d-flex justify-content-center">
           <PillNav
-            logo={"src/assets/fire.svg"}
+            logo={"/fire.svg"}
             logoAlt="Company Logo"
             items={[
               { label: "ASTA", href: "/impostazioni-asta" },

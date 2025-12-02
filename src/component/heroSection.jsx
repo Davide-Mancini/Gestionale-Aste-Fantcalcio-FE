@@ -10,7 +10,7 @@ const HeroSection = () => {
         <Row className=" d-flex align-items-center g-5 py-5 flex-lg-row-reverse ">
           <Col className="col-10 col-sm-8 col-lg-6 mx-auto">
             <video
-              src="public/macbook-air-m2-still (5).mp4"
+              src="/macbook-air-m2-still (5).mp4"
               className=" w-100"
               loop
               muted

@@ -8,102 +8,102 @@ import { getNewsAction } from "../redux/actions/getNewsActions";
 const Campetto = () => {
   const imageLogos = [
     {
-      src: "public/Logo_Atalanta_Bergamo.svg.png",
+      src: "/Logo_Atalanta_Bergamo.svg.png",
       alt: "Company 2",
       href: "https://www.legaseriea.it/it/team/atalanta",
     },
     {
-      src: "public/Bologna_F.C._1909_logo.svg.png",
+      src: "/Bologna_F.C._1909_logo.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/bologna",
     },
     {
-      src: "public/Cagliari_calcio.svg.png",
+      src: "/Cagliari_calcio.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/cagliari",
     },
     {
-      src: "public/Calcio_Como_-_logo_(Italy,_2019-).svg.png",
+      src: "/Calcio_Como_-_logo_(Italy,_2019-).svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/como",
     },
     {
-      src: "public/Unione_Sportiva_Cremonese_logo.svg.png",
+      src: "/Unione_Sportiva_Cremonese_logo.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/cremonese",
     },
     {
-      src: "public/ACF_Fiorentina_-_logo_(Italy,_2022).svg.png",
+      src: "/ACF_Fiorentina_-_logo_(Italy,_2022).svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/fiorentina",
     },
     {
-      src: "public/Genoa_Cricket_and_Football_Club_logo.svg.png",
+      src: "/Genoa_Cricket_and_Football_Club_logo.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/genoa",
     },
     {
-      src: "public/Hellas_Verona_FC_logo_(2020).svg.png",
+      src: "/Hellas_Verona_FC_logo_(2020).svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/hellas-verona",
     },
     {
-      src: "public/Inter_Milano_2021_logo_with_2_stars.svg.png",
+      src: "/Inter_Milano_2021_logo_with_2_stars.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/inter",
     },
     {
-      src: "public/Juventus_FC_2017_logo.png",
+      src: "/Juventus_FC_2017_logo.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/juventus",
     },
     {
-      src: "public/Stemma_della_Società_Sportiva_Lazio.svg.png",
+      src: "/Stemma_della_Società_Sportiva_Lazio.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/lazio",
     },
     {
-      src: "public/US_Lecce_Stemma.svg.png",
+      src: "/US_Lecce_Stemma.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/lecce",
     },
     {
-      src: "public/Logo_of_AC_Milan.svg.png",
+      src: "/Logo_of_AC_Milan.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/milan",
     },
     {
-      src: "public/SSC_Neapel.svg.png",
+      src: "/SSC_Neapel.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/napoli",
     },
     {
-      src: "public/Logo_Parma_Calcio_1913_(adozione_2016).svg.png",
+      src: "/Logo_Parma_Calcio_1913_(adozione_2016).svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/parma",
     },
     {
-      src: "public/Logo_Pisa_SC_2017.svg.png",
+      src: "/Logo_Pisa_SC_2017.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/pisa",
     },
     {
-      src: "public/AS_Roma_Logo_2017.svg.png",
+      src: "/AS_Roma_Logo_2017.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/roma",
     },
     {
-      src: "public/Ussassuolostemma.svg.png",
+      src: "/Ussassuolostemma.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/sassuolo",
     },
     {
-      src: "public/Torino_FC_logo.svg.png",
+      src: "/Torino_FC_logo.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/torino",
     },
     {
-      src: "public/Logo_Udinese_Calcio_2010.svg.png",
+      src: "/Logo_Udinese_Calcio_2010.svg.png",
       alt: "Company 3",
       href: "https://www.legaseriea.it/it/team/udinese",
     },
@@ -121,7 +121,7 @@ const Campetto = () => {
       <Container fluid className=" bg-dark ">
         <div className=" d-flex justify-content-center">
           <PillNav
-            logo={"src/assets/fire.svg"}
+            logo={"/fire.svg"}
             logoAlt="Company Logo"
             items={[
               { label: "ASTA", href: "/impostazioni-asta" },
