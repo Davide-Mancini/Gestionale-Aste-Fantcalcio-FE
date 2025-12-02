@@ -1,7 +1,7 @@
 export const SIGN_OUT = "SIGN_OUT";
 export const Logout = () => {
   return async (dispatch) => {
-    fetch("http://localhost:3001/auth/logout", {
+    fetch("rich-del-davide-mancini-9aa8ac64.koyeb.app/auth/logout", {
       method: "POST",
       credentials: "include",
     })

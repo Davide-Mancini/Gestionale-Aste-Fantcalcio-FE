@@ -156,7 +156,7 @@ const Searchbar = ({
   const [copia, setCopia] = useState(false);
   //FUNZIONE PER COPIARE L'URL DA INVIARE AD AMICI, MODIFICA LO STATO COPIA PER POTER CAMBIARE LA SCRITTA E DOPO 3 SEC TORNA NORMALE
   const handleCopia = () => {
-    const testoDaCopiare = `http://localhost:5173/sessioniAsta/${dettagliAstaRecuperata?.id}`;
+    const testoDaCopiare = `https://fantahub-red.vercel.app/sessioniAsta/${dettagliAstaRecuperata?.id}`;
     navigator.clipboard.writeText(testoDaCopiare);
     setCopia(true);
     setTimeout(() => {
@@ -236,7 +236,8 @@ const Searchbar = ({
           </Modal.Body>
           <Modal.Body className=" fw-bold ">
             <small>
-              http://localhost:5173/sessioniAsta/{dettagliAstaRecuperata?.id}
+              https://fantahub-red.vercel.app/sessioniAsta/
+              {dettagliAstaRecuperata?.id}
             </small>
             <Button
               variant="warning"

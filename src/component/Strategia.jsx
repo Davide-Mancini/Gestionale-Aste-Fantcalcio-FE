@@ -251,13 +251,16 @@ const Strategia = () => {
     setLoadingStrategie(true);
 
     try {
-      const response = await fetch("http://localhost:3001/strategie", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        "rich-del-davide-mancini-9aa8ac64.koyeb.app/strategie",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Errore nel recupero delle strategie.");
@@ -304,7 +307,7 @@ const Strategia = () => {
     }
 
     console.log("Payload da inviare:", strategiaPayload);
-    fetch("http://localhost:3001/strategie", {
+    fetch("rich-del-davide-mancini-9aa8ac64.koyeb.app/strategie", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -348,7 +351,7 @@ const Strategia = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/strategie/${strategiaId}`,
+        `rich-del-davide-mancini-9aa8ac64.koyeb.app/strategie/${strategiaId}`,
         options
       );
 

@@ -132,7 +132,7 @@ const AnimatedList2 = ({
               } ${itemClassName}`}
             >
               <a
-                href={`http://localhost:5173/strategia`}
+                href={`https://fantahub-red.vercel.app/strategia`}
                 className="item-text text-decoration-none"
               >
                 {item.nome}

@@ -3,7 +3,7 @@ export const uploadImg = (file) => {
   return async (dispatch) => {
     const formData = new FormData();
     formData.append("avatar", file);
-    await fetch("http://localhost:3001/users/me/avatar", {
+    await fetch("rich-del-davide-mancini-9aa8ac64.koyeb.app/users/me/avatar", {
       method: "PATCH",
       body: formData,
 

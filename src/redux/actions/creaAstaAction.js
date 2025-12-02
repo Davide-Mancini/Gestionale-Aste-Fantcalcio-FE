@@ -2,7 +2,7 @@ export const CREA_ASTA = "CREA_ASTA";
 
 export const creaAstaAction = (nome, partecipanti, crediti, navigate) => {
   return async (dispatch) => {
-    await fetch("http://localhost:3001/sessioniAsta", {
+    await fetch("rich-del-davide-mancini-9aa8ac64.koyeb.app/sessioniAsta", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

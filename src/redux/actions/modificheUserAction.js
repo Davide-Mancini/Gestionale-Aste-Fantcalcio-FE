@@ -1,7 +1,7 @@
 export const MODIFICA_UTENTE = "MODIFICA_UTENTE";
 export const modificheUserAction = (id, nome, cognome, username, email) => {
   return async (dispatch) => {
-    await fetch(`http://localhost:3001/users/${id}`, {
+    await fetch(`rich-del-davide-mancini-9aa8ac64.koyeb.app/users/${id}`, {
       method: "PUT",
       body: JSON.stringify({ nome, cognome, username, email }),
       headers: {

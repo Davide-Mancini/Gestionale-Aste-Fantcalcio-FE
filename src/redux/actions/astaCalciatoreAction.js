@@ -1,14 +1,17 @@
 export const ASTA_CALCIATORE = "ASTA_CALCIATORE";
 export const astaCalciatoreAction = (calciatore, asta) => {
   return async (dispatch) => {
-    await fetch("http://localhost:3001/astacalciatore/nuova-asta", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        calciatore: calciatore,
-        asta: asta,
-      }),
-    })
+    await fetch(
+      "rich-del-davide-mancini-9aa8ac64.koyeb.app/astacalciatore/nuova-asta",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          calciatore: calciatore,
+          asta: asta,
+        }),
+      }
+    )
       .then((res) => {
         if (res.ok) {
           return res.json();

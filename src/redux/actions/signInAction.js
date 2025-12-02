@@ -7,7 +7,7 @@ export const resetLoginSuccess = () => ({
 });
 export const signIn = (email, password) => {
   return async (dispatch) => {
-    await fetch("http://localhost:3001/auth/login", {
+    await fetch("rich-del-davide-mancini-9aa8ac64.koyeb.app/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
       headers: {
