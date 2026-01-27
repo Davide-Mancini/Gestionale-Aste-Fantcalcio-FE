@@ -11,3 +11,4 @@ Front End sviluppato con React e Bootstrap
 Back End con Sprin Boot e database con PostgreSQL
 Nella homepage sono presenti alcuni elementi animati della libreria ReactBits e bottoni per effetturare accesso o registrazione.
 
+![screenshot](img.png)
